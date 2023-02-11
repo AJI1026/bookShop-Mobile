@@ -32,6 +32,7 @@ header {
   width: 100%;
   height: 80px;
   background-color: sandybrown;
+  z-index: 999;
 }
 header h1 {
   display: flex;

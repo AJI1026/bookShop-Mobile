@@ -1,32 +1,57 @@
 <template>
   <div class="swiper-container">
-    <swiper :options="swiperOption">
-      <swiper-slide>1</swiper-slide>
-      <swiper-slide>2</swiper-slide>
-      <swiper-slide>3</swiper-slide>
-      <swiper-slide>4</swiper-slide>
+    <swiper :options="swiperOption" class="pictures">
+      <swiper-slide v-for="(img, index) in swiperList" :key="swiperList[index].id">
+        <img :src="img.imgUrl" alt=""/>
+      </swiper-slide>
     </swiper>
-    <div class="swiper-pagination"></div>
+    <div class="swiper-pagination" slot="pagination"></div>
   </div>
 </template>
 
 <script>
-// 引入轮播图插件
-import 'swiper/swiper-bundle.css'
-import { swiper, swiperSlide } from 'vue-awesome-swiper'
+// 引入swiper插件
+import { swiper, swiperSlide } from "vue-awesome-swiper";
+import "swiper/dist/css/swiper.css";
 
 export default {
   name: 'swiper-container',
   components: {
     swiper,
-    swiperSlide,
+    swiperSlide
   },
   data() {
     return {
       swiperOption: {
-        autoplay: 3000,
-        speed: 1000,
-      }
+        loop: true,
+        autoplay: {
+          delay: 3000,
+          stopOnLastSlide: false,
+          disableOnInteraction: false,
+        }, // 播放控制
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true, //允许分页点击跳转
+        }, // 显示分页
+      },
+      swiperList: [
+        {
+          id: 0,
+          imgUrl: "./images/swiper0.jpg",
+        },
+        {
+          id: 1,
+          imgUrl: "./images/swiper1.jpg",
+        },
+        {
+          id: 2,
+          imgUrl: "./images/swiper2.jpg",
+        },
+        {
+          id: 3,
+          imgUrl: "./images/swiper3.jpg",
+        },
+      ], // 轮播图数据
     }
   },
 }
@@ -34,6 +59,18 @@ export default {
 
 <style scoped>
 .swiper-container {
-
+  height: 300px;
+}
+.swiper-container .pictures img {
+  width: 100%;
+  height: 300px;
+}
+.swiper-pagination {
+  height: 80px;
+  position: relative;
+  top: -40px;
+}
+>>> .swiper-pagination .swiper-pagination-bullet-active {
+  background-color: sandybrown;
 }
 </style>
