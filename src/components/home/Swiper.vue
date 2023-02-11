@@ -20,6 +20,9 @@ export default {
     swiper,
     swiperSlide
   },
+  props: {
+    swiperList:Array
+  },
   data() {
     return {
       swiperOption: {
@@ -34,24 +37,6 @@ export default {
           clickable: true, //允许分页点击跳转
         }, // 显示分页
       },
-      swiperList: [
-        {
-          id: 0,
-          imgUrl: "./images/swiper0.jpg",
-        },
-        {
-          id: 1,
-          imgUrl: "./images/swiper1.jpg",
-        },
-        {
-          id: 2,
-          imgUrl: "./images/swiper2.jpg",
-        },
-        {
-          id: 3,
-          imgUrl: "./images/swiper3.jpg",
-        },
-      ], // 轮播图数据
     }
   },
 }

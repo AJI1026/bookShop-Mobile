@@ -26,47 +26,11 @@ export default {
   components: {
     Card,
   },
+  props: {
+    likeList:Array
+  },
   data() {
     return {
-      // 推荐数据
-      likeList: [
-        {
-          id: 0,
-          name: '可编程网络自动化',
-          price: '128',
-          imgUrl: './images/like0.jpeg'
-        },
-        {
-          id: 1,
-          name: '可编程网络自动化',
-          price: '128',
-          imgUrl: './images/like1.jpeg'
-        },
-        {
-          id: 2,
-          name: '可编程网络自动化',
-          price: '128',
-          imgUrl: './images/like2.jpeg'
-        },
-        {
-          id: 3,
-          name: '可编程网络自动化',
-          price: '128',
-          imgUrl: './images/like3.jpeg'
-        },
-        {
-          id: 4,
-          name: '可编程网络自动化',
-          price: '128',
-          imgUrl: './images/like4.jpeg'
-        },
-        {
-          id: 5,
-          name: '可编程网络自动化',
-          price: '128',
-          imgUrl: './images/like5.jpeg'
-        },
-      ]
     }
   }
 }

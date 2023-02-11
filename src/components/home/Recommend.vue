@@ -27,46 +27,11 @@ export default {
   components: {
     Card,
   },
+  props: {
+    recommendList:Array
+  },
   data() {
     return {
-      // 推荐数据
-      recommendList: [
-        {
-          id: 0,
-          name: 'TensorFlow技术解析与实践',
-          content: '技能推荐',
-          price: '68',
-          imgUrl: './images/re0.png'
-        },
-        {
-          id: 1,
-          name: 'TensorFlow技术解析与实践',
-          content: '技能推荐',
-          price: '68',
-          imgUrl: './images/re1.png'
-        },
-        {
-          id: 2,
-          name: 'TensorFlow技术解析与实践',
-          content: '技能推荐',
-          price: '68',
-          imgUrl: './images/re2.png'
-        },
-        {
-          id: 3,
-          name: 'TensorFlow技术解析与实践',
-          content: '技能推荐',
-          price: '68',
-          imgUrl: './images/re3.png'
-        },
-        {
-          id: 4,
-          name: 'TensorFlow技术解析与实践',
-          content: '技能推荐',
-          price: '68',
-          imgUrl: './images/re4.png'
-        },
-      ]
     }
   }
 }
@@ -104,7 +69,7 @@ export default {
   text-align: center;
 }
 #text p {
-  text-align: center;
+  text-align: right;
 }
 #price {
   box-sizing: border-box;
