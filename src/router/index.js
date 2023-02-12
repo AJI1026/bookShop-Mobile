@@ -4,7 +4,9 @@ import Home from "@/views/Home";
 import List from "@/views/List";
 import Cart from "@/views/Cart";
 import My from "@/views/My";
-import Search from "@/views/Search";
+import Search from "@/views/Search/Search";
+import SearchList from "@/views/Search/Search-list";
+import SearchIndex from "@/views/Search/Search-index";
 
 Vue.use(VueRouter)
 
@@ -48,6 +50,18 @@ const routes = [
         path : "/search",
         name: "Search",
         component: Search,
+        children: [
+            {
+                path : "/",
+                name: "SearchIndex",
+                component: SearchIndex,
+            },
+            {
+                path : "/searchList",
+                name: "SearchList",
+                component: SearchList,
+            },
+        ]
     },
 ]
 

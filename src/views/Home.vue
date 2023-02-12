@@ -44,7 +44,7 @@ import Swiper from "@/components/home/Swiper";
 import Header from "@/components/home/Header";
 import Tabbar from '@/components/common/Tabbar';
 // 引入插件
-import axios from 'axios';
+import http from '@/common/api/request'
 
 export default {
   name: 'home-container',
@@ -67,29 +67,29 @@ export default {
   methods: {
     // 这里获取不同tabBar下对应的数据
     async addData(index) {
-      let res = await axios({
-        method: 'GET',
-        url: `/api/index_list/${index}/data/1`
+      let res = await http.$axios({
+        url: `/api/index_list/${index}/data/1`,
       });
-      if(res.data.data.constructor !== Array) {
-        this.otherData = res.data.data.data
+      if(res.constructor !== Array) {
+        this.otherData = res.data
       } else {
-        this.otherData = res.data.data
+        this.otherData = res
       }
     },
+
     // 点击tabBar切换数据
     changeTab(index) {
       this.addData(index);
     },
+
     // 获取数据
     async getData() {
-      let res = await axios({
-        method: 'GET',
-        url: '/api/index_list/0/data/1'
+      let res = await http.$axios({
+        url: '/api/index_list/0/data/1',
       });
       // 性能提升
-      this.topBar = Object.freeze(res.data.data.topBar);
-      this.otherData = Object.freeze(res.data.data.data);
+      this.topBar = Object.freeze(res.topBar);
+      this.otherData = Object.freeze(res.data);
     }
   },
   created() {
