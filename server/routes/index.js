@@ -2,11 +2,11 @@ var express = require('express');
 var router = express.Router();
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', function(req, res) {
   res.render('index', { title: 'Express' });
 });
 // 首页推荐数据
-router.get('/api/index_list/0/data/1', function (req, res, next) {
+router.get('/api/index_list/0/data/1', function (req, res) {
   res.send({
     code: 0,
     data: {
@@ -153,7 +153,7 @@ router.get('/api/index_list/0/data/1', function (req, res, next) {
   })
 })
 // 首页webgl数据
-router.get('/api/index_list/1/data/1', function (req, res, next) {
+router.get('/api/index_list/1/data/1', function (req, res) {
   res.send({
     code: 0,
     data: [
@@ -197,7 +197,7 @@ router.get('/api/index_list/1/data/1', function (req, res, next) {
   })
 })
 // 首页chatGpt数据
-router.get('/api/index_list/2/data/1', function (req, res, next) {
+router.get('/api/index_list/2/data/1', function (req, res) {
   res.send({
     code: 0,
     data: [
@@ -229,7 +229,7 @@ router.get('/api/index_list/2/data/1', function (req, res, next) {
   })
 })
 // 首页大数据数据
-router.get('/api/index_list/3/data/1', function (req, res, next) {
+router.get('/api/index_list/3/data/1', function (req, res) {
   res.send({
     code: 0,
     data: [
@@ -285,7 +285,7 @@ router.get('/api/index_list/3/data/1', function (req, res, next) {
   })
 })
 // 首页元宇宙数据
-router.get('/api/index_list/4/data/1', function (req, res, next) {
+router.get('/api/index_list/4/data/1', function (req, res) {
   res.send({
     code: 0,
     data: [
@@ -335,7 +335,7 @@ router.get('/api/index_list/4/data/1', function (req, res, next) {
   })
 })
 // 首页编译原理数据
-router.get('/api/index_list/5/data/1', function (req, res, next) {
+router.get('/api/index_list/5/data/1', function (req, res) {
   res.send({
     code: 0,
     data: [

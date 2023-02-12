@@ -10,3 +10,11 @@ html, body, #app {
     width: 100%;
     overflow-x: hidden;
 }
+input {
+    background: none;
+    outline: none;
+    border: none;
+}
+input:focus {
+    border: none;
+}
