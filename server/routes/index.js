@@ -1,9 +1,23 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const connection = require('../db/sql');
 
 /* GET home page. */
 router.get('/', function(req, res) {
   res.render('index', { title: 'Express' });
+});
+
+// 查询商品数据接口
+router.get('/api/goods/shopList', function (req, res) {
+  let [searchName, sortName] = Object.keys(req.query);
+  let [name, sort] = Object.values(req.query)
+  console.log(searchName, name, sortName, sort)
+  connection.query('select * from goods_list where name like "%'+name+'%" order by '+sortName+' '+sort+' ', function (error,result) {
+    res.send({
+      code:0,
+      data:result
+    })
+  })
 });
 // 首页推荐数据
 router.get('/api/index_list/0/data/1', function (req, res) {
@@ -151,7 +165,7 @@ router.get('/api/index_list/0/data/1', function (req, res) {
       ]
     },
   })
-})
+});
 // 首页webgl数据
 router.get('/api/index_list/1/data/1', function (req, res) {
   res.send({
@@ -195,7 +209,7 @@ router.get('/api/index_list/1/data/1', function (req, res) {
       }
     ]
   })
-})
+});
 // 首页chatGpt数据
 router.get('/api/index_list/2/data/1', function (req, res) {
   res.send({
@@ -227,7 +241,7 @@ router.get('/api/index_list/2/data/1', function (req, res) {
       }
     ]
   })
-})
+});
 // 首页大数据数据
 router.get('/api/index_list/3/data/1', function (req, res) {
   res.send({
@@ -283,7 +297,7 @@ router.get('/api/index_list/3/data/1', function (req, res) {
       }
     ]
   })
-})
+});
 // 首页元宇宙数据
 router.get('/api/index_list/4/data/1', function (req, res) {
   res.send({
@@ -333,7 +347,7 @@ router.get('/api/index_list/4/data/1', function (req, res) {
       }
     ]
   })
-})
+});
 // 首页编译原理数据
 router.get('/api/index_list/5/data/1', function (req, res) {
   res.send({
@@ -377,6 +391,6 @@ router.get('/api/index_list/5/data/1', function (req, res) {
       }
     ]
   })
-})
+});
 
 module.exports = router;

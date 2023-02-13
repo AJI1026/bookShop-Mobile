@@ -12,7 +12,11 @@
           <span>清空搜索记录</span>
         </h2>
         <ul>
-          <li v-for="(item, index) in searchArr" :key="index">{{item}}</li>
+          <li
+              v-for="(item, index) in searchArr"
+              :key="index"
+              @click="goSearchList(item)"
+          >{{item}}</li>
         </ul>
       </div>
       <div v-else class="no-data" style="font-size: 14px">
@@ -37,6 +41,17 @@ export default {
   data() {
     return {
       searchArr: []
+    }
+  },
+  methods: {
+    // 点击历史搜索，进入结果页面
+    goSearchList(item) {
+      this.$router.push({
+        name: 'SearchList',
+        query: {
+          key: item
+        }
+      })
     }
   },
   created() {

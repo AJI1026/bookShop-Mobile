@@ -56,7 +56,7 @@ export default {
           key: this.searchValue
         }
       })
-    }
+    },
   }
 }
 </script>
