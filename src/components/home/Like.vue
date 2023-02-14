@@ -6,7 +6,8 @@
     <ul>
       <li v-for="(item, index) in likeList" :key="index">
         <h2>
-          <img :src="item.imgUrl" alt="" />
+          <!--图片懒加载-->
+          <img v-lazy="item.imgUrl" alt=""/>
         </h2>
         <h3 style="font-size: 12px">{{item.name}}</h3>
         <div id="price">
@@ -63,5 +64,10 @@ export default {
 .like img {
   width: 100%;
   height: 400px;
+}
+.like img[lazy=loading] {
+  background-image: url("../../assets/images/loading.gif");
+  background-position: center;
+  background-size: cover;
 }
 </style>

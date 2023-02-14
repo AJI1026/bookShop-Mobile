@@ -22,9 +22,9 @@
     </div>
     <!--搜素详情页中间内容-->
     <section>
-      <ul v-if="goodsList.length">
+      <ul v-if="goods">
         <li v-for="(goods, index) in goodsList" :key="index">
-          <img :src="goods.imgUrl" alt="" />
+          <img v-lazy="goods.imgUrl" alt="" />
           <h3 style="width: 150px">{{goods.name}}</h3>
           <div class="price">
             <div>
@@ -66,7 +66,8 @@ export default {
           {name:'价格',status: 0, key:'price'}, //status 排序方式 0 默认 1 升序 2 降序
           {name:'销量',status: 0, key:'num'},
         ]
-      }
+      }, // 搜索历史数据
+      goods: true, // 处理空数据图片闪屏问题
     }
   },
   computed: {
@@ -96,6 +97,9 @@ export default {
         }
       }).then(res => {
         this.goodsList = res;
+        if(this.goodsList.length===0) {
+          this.goods = false
+        }
       })
     },
     // 切换过滤条件
@@ -164,6 +168,11 @@ section {
 section ul li img {
   width: 300px;
   height: 300px;
+}
+section ul li img[lazy=loading] {
+  background-image: url("../../assets/images/loading.gif");
+  background-position: center;
+  background-size: cover;
 }
 section ul {
   display: flex;

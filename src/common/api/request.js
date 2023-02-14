@@ -14,7 +14,10 @@ export default {
         options.params = options.params || this.common.params;
 
         // 请求显示加载中
-        Indicator.open('加载中...');
+        Indicator.open({
+            text: '加载中...',
+            spinnerType: 'fading-circle'
+        });
 
         return axios(options).then(v => {
             let data = v.data.data;

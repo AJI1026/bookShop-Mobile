@@ -10,6 +10,11 @@ import 'lib-flexible';
 // 引入导航插件
 import LyTab from 'ly-tab';
 Vue.use(LyTab);
+// 引入加载
+import { Lazyload, Indicator } from 'mint-ui';
+import 'mint-ui/lib/style.css'
+Vue.use(Lazyload)
+Vue.use(Indicator)
 
 Vue.config.productionTip = false
 

@@ -160,6 +160,30 @@ router.get('/api/index_list/0/data/1', function (req, res) {
               price: '128',
               imgUrl: './images/like5.jpeg'
             },
+            {
+              id: 6,
+              name: 'Python编程',
+              price: '128',
+              imgUrl: './images/like1.jpeg'
+            },
+            {
+              id: 7,
+              name: 'Python编程',
+              price: '128',
+              imgUrl: './images/like2.jpeg'
+            },
+            {
+              id: 8,
+              name: 'Python编程',
+              price: '128',
+              imgUrl: './images/like3.jpeg'
+            },
+            {
+              id: 9,
+              name: 'Python编程',
+              price: '128',
+              imgUrl: './images/like4.jpeg'
+            },
           ]
         }
       ]

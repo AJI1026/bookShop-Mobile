@@ -4,7 +4,7 @@
     <ul>
       <li v-for="(item, index) in recommendList" :key="index">
         <h2>
-          <img :src="item.imgUrl" alt="" />
+          <img v-lazy="item.imgUrl" alt="" />
         </h2>
         <div id="text">
           <h3 style="font-size: 8px; font-weight: 400">{{item.name}}</h3>
@@ -55,6 +55,11 @@ export default {
   margin-left: 60px;
   width: 220px;
   height: 220px;
+}
+.recommend ul li img[lazy=loading] {
+  background-image: url("../../assets/images/loading.gif");
+  background-position: center;
+  background-size: cover;
 }
 .recommend ul li > div{
   display: flex;
