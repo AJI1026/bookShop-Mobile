@@ -4,7 +4,10 @@
       <span>勇者的推荐</span>
     </Card>
     <ul>
-      <li v-for="(item, index) in likeList" :key="index">
+      <li v-for="(item, index) in likeList"
+          :key="index"
+          @click="goDetail"
+      >
         <h2>
           <!--图片懒加载-->
           <img v-lazy="item.imgUrl" alt=""/>
@@ -33,6 +36,11 @@ export default {
   data() {
     return {
     }
+  },
+  methods: {
+    goDetail() {
+      this.$router.push('/detail')
+    },
   }
 }
 </script>

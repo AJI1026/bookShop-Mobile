@@ -2,14 +2,14 @@
   <div id="list-container">
     <!--头部-->
     <header>
-      <div class="returns">
+      <div class="returns" @click="goBack">
         <i class="iconfont icon-back"></i>
       </div>
-      <div class="search">
+      <div class="search" @click="goSearch">
         <i class="iconfont icon-fangdajing"></i>
         <span>搜你喜欢的</span>
       </div>
-      <div class="home">
+      <div class="home" @click="goHome">
         <i class="iconfont icon-shouye"></i>
       </div>
     </header>
@@ -74,6 +74,18 @@ export default {
     }
   },
   methods: {
+    // 返回页面
+    goBack() {
+      this.$router.back()
+    },
+    // 去搜索页
+    goSearch() {
+      this.$router.push('/search')
+    },
+    // 返回首页
+    goHome() {
+      this.$router.push('/home')
+    },
     goScroll(index) {
       this.rightScroll.scrollTo(0, -this.allHeight[index], 500)
     }
@@ -208,8 +220,9 @@ export default {
       height: calc(100vh - 200px);
       .shop-list {
         text-align: center;
+        margin-bottom: 20px;
         h2 {
-          padding: 20px;
+          padding: 40px;
           font-size: 12px;
         }
         .right-content {
@@ -220,7 +233,7 @@ export default {
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 40px;
             width: 33.3%;
             img {
               width: 160px;

@@ -7,6 +7,7 @@ import My from "@/views/My";
 import Search from "@/views/Search/Search";
 import SearchList from "@/views/Search/Search-list";
 import SearchIndex from "@/views/Search/Search-index";
+import Detail from "@/views/Detail";
 
 Vue.use(VueRouter)
 
@@ -62,6 +63,12 @@ const routes = [
                 component: SearchList,
             },
         ]
+    },
+    // 详情页
+    {
+        path : "/detail",
+        name: "Detail",
+        component: Detail,
     },
 ]
 
