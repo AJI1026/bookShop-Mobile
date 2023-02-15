@@ -19,6 +19,399 @@ router.get('/api/goods/shopList', function (req, res) {
     })
   })
 });
+// 分类接口
+router.get('/api/goods/list', function (req, res) {
+  res.send({
+    code : 0,
+    data: [
+      {
+        // 一级
+        id: 0,
+        name:'推荐',
+        data: [
+          {
+            // 二级
+            id:0,
+            name:'推荐',
+            list: [
+              // 三级
+              {
+                id: 0,
+                name: '数字女王',
+                imgUrl: './images/list0.png'
+              },
+              {
+                id: 1,
+                name: '谁在掷骰子',
+                imgUrl: './images/list1.png'
+              },
+              {
+                id: 2,
+                name: '泛函分析导论',
+                imgUrl: './images/list2.png'
+              },
+              {
+                id: 3,
+                name: '育儿脑科学',
+                imgUrl: './images/list3.png'
+              },
+              {
+                id: 4,
+                name: '通信简史',
+                imgUrl: './images/list4.png'
+              },
+              {
+                id: 5,
+                name: '微前端设计与实现',
+                imgUrl: './images/list5.png'
+              },
+            ]
+          }
+        ]
+      },
+      {
+        // 一级
+        id: 1,
+        name:'编程语言',
+        data: [
+          {
+            // 二级
+            id:0,
+            name:'编程语言',
+            list: [
+              // 三级
+              {
+                id: 0,
+                name: 'Java性能权威指南（第2版）',
+                imgUrl: './images/code0.png'
+              },
+              {
+                id: 1,
+                name: 'C语言程序设计：现代方法（第2版 • 修订版）习题解答',
+                imgUrl: './images/code1.png'
+              },
+              {
+                id: 2,
+                name: 'shell脚本基础教程',
+                imgUrl: './images/code2.png'
+              },
+              {
+                id: 3,
+                name: '明解Python',
+                imgUrl: './images/code3.png'
+              },
+              {
+                id: 4,
+                name: '明解C++',
+                imgUrl: './images/code4.png'
+              },
+              {
+                id: 5,
+                name: 'Node与Express开发（第2版）',
+                imgUrl: './images/code5.png'
+              },
+            ]
+          }
+        ]
+      },
+      {
+        // 一级
+        id: 2,
+        name:'软件开发',
+        data: [
+          {
+            // 二级
+            id:0,
+            name:'软件开发',
+            list: [
+              // 三级
+              {
+                id: 0,
+                name: '量子计算机编程：从入门到实践',
+                imgUrl: './images/code6.png'
+              },
+              {
+                id: 1,
+                name: '活文档：与代码共同演进 ',
+                imgUrl: './images/code7.png'
+              },
+              {
+                id: 2,
+                name: 'Python函数式编程（第2版）',
+                imgUrl: './images/code8.png'
+              },
+              {
+                id: 3,
+                name: '加速：企业数字化转型的24项核心能力 ',
+                imgUrl: './images/code9.png'
+              },
+              {
+                id: 4,
+                name: '量子计算机编程：从入门到实践 ',
+                imgUrl: './images/code10.png'
+              },
+              {
+                id: 5,
+                name: 'gRPC与云原生应用开发：以Go和Java为例 ',
+                imgUrl: './images/code11.png'
+              },
+            ]
+          }
+        ]
+      },
+      {
+        // 一级
+        id: 3,
+        name:'Web设计',
+        data: [
+          {
+            // 二级
+            id:0,
+            name:'Web设计',
+            list: [
+              // 三级
+              {
+                id: 0,
+                name: '图解网站分析（修订版）：让流量倍增的网站优化方法',
+                imgUrl: './images/code12.png'
+              },
+              {
+                id: 1,
+                name: '精通Spring：Java Web开发与Spring Boot高级功能',
+                imgUrl: './images/code13.png'
+              },
+            ]
+          }
+        ]
+      },
+      {
+        // 一级
+        id: 4,
+        name:'数据科学',
+        data: [
+          {
+            // 二级
+            id:0,
+            name:'数据科学',
+            list: [
+              // 三级
+              {
+                id: 0,
+                name: '用数据讲故事（修订版）',
+                imgUrl: './images/code14.png'
+              },
+              {
+                id: 1,
+                name: 'Spark快速大数据分析（第2版）',
+                imgUrl: './images/code15.png'
+              },
+              {
+                id: 2,
+                name: 'Python 3网络爬虫开发实战（第2版）',
+                imgUrl: './images/code16.png'
+              },
+              {
+                id: 3,
+                name: '图数据库实战',
+                imgUrl: './images/code17.png'
+              },
+              {
+                id: 4,
+                name: '统计学图鉴',
+                imgUrl: './images/code18.png'
+              },
+              {
+                id: 5,
+                name: '数据科学中的实用统计学（第2版）',
+                imgUrl: './images/code19.png'
+              },
+            ]
+          }
+        ]
+      },
+      {
+        // 一级
+        id: 5,
+        name:'游戏开发',
+        data: [
+          {
+            // 二级
+            id:0,
+            name:'游戏开发',
+            list: [
+              // 三级
+              {
+                id: 0,
+                name: 'SQL经典实例（第2版）',
+                imgUrl: './images/code20.png'
+              },
+              {
+                id: 1,
+                name: 'MongoDB权威指南（第3版）',
+                imgUrl: './images/code21.png'
+              },
+              {
+                id: 2,
+                name: '数据库可靠性工程：数据库系统设计与运维指南',
+                imgUrl: './images/code22.png'
+              },
+              {
+                id: 3,
+                name: 'Presto实战',
+                imgUrl: './images/code23.png'
+              },
+            ]
+          }
+        ]
+      },
+      {
+        // 一级
+        id: 6,
+        name:'人工智能',
+        data: [
+          {
+            // 二级
+            id:0,
+            name:'人工智能',
+            list: [
+              // 三级
+              {
+                id: 0,
+                name: '图神经网络导论',
+                imgUrl: './images/code24.png'
+              },
+              {
+                id: 1,
+                name: 'Python深度学习（第2版）',
+                imgUrl: './images/code25.png'
+              },
+              {
+                id: 2,
+                name: '机器学习极简入门',
+                imgUrl: './images/code26.png'
+              },
+              {
+                id: 3,
+                name: '图解机器学习算法',
+                imgUrl: './images/code27.png'
+              },
+              {
+                id: 4,
+                name: '深度学习原理与PyTorch实战（第2版）',
+                imgUrl: './images/code28.png'
+              },
+              {
+                id: 5,
+                name: '机器学习：公式推导与代码实现',
+                imgUrl: './images/code29.png'
+              },
+            ]
+          }
+        ]
+      },
+      {
+        // 一级
+        id: 7,
+        name:'操作系统',
+        data: [
+          {
+            // 二级
+            id:0,
+            name:'操作系统',
+            list: [
+              // 三级
+              {
+                id: 0,
+                name: 'shell脚本基础教程',
+                imgUrl: './images/code30.png'
+              },
+              {
+                id: 1,
+                name: '跟阿铭学Linux（第4版）',
+                imgUrl: './images/code31.png'
+              },
+              {
+                id: 2,
+                name: 'Linux命令行与shell脚本编程大全（第4版）',
+                imgUrl: './images/code32.png'
+              },
+            ]
+          }
+        ]
+      },
+      {
+        // 一级
+        id: 8,
+        name:'图像处理',
+        data: [
+          {
+            // 二级
+            id:0,
+            name:'图像处理',
+            list: [
+              // 三级
+              {
+                id: 0,
+                name: 'OpenCV计算机视觉编程攻略（第2版）',
+                imgUrl: './images/code33.png'
+              },
+            ]
+          }
+        ]
+      },
+      {
+        // 一级
+        id: 9,
+        name:'计算机原理',
+        data: [
+          {
+            // 二级
+            id:0,
+            name:'计算机原理',
+            list: [
+              // 三级
+              {
+                id: 0,
+                name: '程序员的数学（第2版）',
+                imgUrl: './images/code34.png'
+              },
+              {
+                id: 1,
+                name: '游戏机图鉴：一部游戏机进化的视觉史',
+                imgUrl: './images/code35.png'
+              },
+            ]
+          }
+        ]
+      },
+      {
+        // 一级
+        id: 10,
+        name:'计算机数学',
+        data: [
+          {
+            // 二级
+            id:0,
+            name:'计算机数学',
+            list: [
+              // 三级
+              {
+                id: 0,
+                name: '趣学贝叶斯统计：橡皮鸭、乐高和星球大战中的统计学',
+                imgUrl: './images/code36.png'
+              },
+              {
+                id: 1,
+                name: '统计学图鉴',
+                imgUrl: './images/code37.png'
+              },
+            ]
+          }
+        ]
+      }
+    ]
+  })
+})
 // 首页推荐数据
 router.get('/api/index_list/0/data/1', function (req, res) {
   res.send({
