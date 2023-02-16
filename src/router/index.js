@@ -8,6 +8,8 @@ import Search from "@/views/Search/Search";
 import SearchList from "@/views/Search/Search-list";
 import SearchIndex from "@/views/Search/Search-index";
 import Detail from "@/views/Detail";
+import Login from "@/views/login/Login";
+import UserLogin from "@/views/login/userLogin";
 
 Vue.use(VueRouter)
 
@@ -27,6 +29,9 @@ const routes = [
         path : "/home",
         name: "Home",
         component: Home,
+        meta: {
+            keepalive: true,
+        }
     },
     // 分类页
     {
@@ -69,6 +74,21 @@ const routes = [
         path : "/detail",
         name: "Detail",
         component: Detail,
+        meta: {
+            keepalive: true,
+        }
+    },
+    // 登录页
+    {
+        path : "/login",
+        name: "Login",
+        component: Login,
+    },
+    // 用户登录
+    {
+        path : "/userLogin",
+        name: "UserLogin",
+        component: UserLogin,
     },
 ]
 

@@ -19,6 +19,17 @@ router.get('/api/goods/shopList', function (req, res) {
     })
   })
 });
+// 根据id查询数据
+router.get('/api/goods/id', function (req, res) {
+  let id = req.query.id;
+  connection.query('select * from goods_list where id = '+id+'', function (error, result) {
+    if(error) throw error;
+    res.json ({
+      code: 0,
+      data : result[0]
+    })
+  })
+})
 // 分类接口
 router.get('/api/goods/list', function (req, res) {
   res.send({
@@ -521,61 +532,43 @@ router.get('/api/index_list/0/data/1', function (req, res) {
               id: 0,
               name: '可编程网络自动化',
               price: '128',
+              priceOff: '113',
               imgUrl: './images/like0.jpeg'
             },
             {
               id: 1,
               name: '你不知道的JavaScript',
-              price: '128',
+              price: '44',
+              priceOff: '23',
               imgUrl: './images/like1.jpeg'
             },
             {
               id: 2,
               name: '深度匹配学习',
-              price: '128',
+              price: '76',
+              priceOff: '54',
               imgUrl: './images/like2.jpeg'
             },
             {
               id: 3,
               name: 'ON JAVA中文版 基础卷',
-              price: '128',
+              price: '89',
+              priceOff: '65',
               imgUrl: './images/like3.jpeg'
             },
             {
               id: 4,
               name: '用Go语言自制编译器',
-              price: '128',
+              price: '88',
+              priceOff: '55',
               imgUrl: './images/like4.jpeg'
             },
             {
               id: 5,
               name: 'Python编程',
-              price: '128',
+              price: '92',
+              priceOff: '86',
               imgUrl: './images/like5.jpeg'
-            },
-            {
-              id: 6,
-              name: 'Python编程',
-              price: '128',
-              imgUrl: './images/like1.jpeg'
-            },
-            {
-              id: 7,
-              name: 'Python编程',
-              price: '128',
-              imgUrl: './images/like2.jpeg'
-            },
-            {
-              id: 8,
-              name: 'Python编程',
-              price: '128',
-              imgUrl: './images/like3.jpeg'
-            },
-            {
-              id: 9,
-              name: 'Python编程',
-              price: '128',
-              imgUrl: './images/like4.jpeg'
             },
           ]
         }

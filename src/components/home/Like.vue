@@ -6,7 +6,7 @@
     <ul>
       <li v-for="(item, index) in likeList"
           :key="index"
-          @click="goDetail"
+          @click="goDetail(item.id)"
       >
         <h2>
           <!--图片懒加载-->
@@ -38,8 +38,14 @@ export default {
     }
   },
   methods: {
-    goDetail() {
-      this.$router.push('/detail')
+    goDetail(id) {
+      this.$router.push({
+        path: '/detail',
+        name: 'Detail',
+        query: {
+          id: id
+        }
+      })
     },
   }
 }
