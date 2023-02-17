@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const connection = require('../db/sql');
+const User = require('../db/user')
 
 /* GET home page. */
 router.get('/', function(req, res) {
@@ -28,6 +29,49 @@ router.get('/api/goods/id', function (req, res) {
       code: 0,
       data : result[0]
     })
+  })
+})
+// 用户登录接口
+router.post('/api/login', function (req, res) {
+  let params = {
+    userTel: req.body.userTel,
+    userPwd: req.body.userPwd
+  };
+
+  // 查询用户手机是否存在
+  connection.query(User.queryUserTel(params), function (error, result) {
+    // 手机号存在
+    if(result.length > 0) {
+      connection.query(User.queryUserPwd(params), function (error, result) {
+        if(result.length > 0) {
+          // 手机和密码都存在
+          res.send({
+            code : 200,
+            data: {
+              success: true,
+              message: '登录成功',
+              data: result[0]
+            }
+          })
+        } else {
+          res.send({
+            code : 302,
+            data: {
+              success: false,
+              message: '密码不正确'
+            }
+          })
+        }
+      })
+    } else {
+      res.send({
+        code : 301,
+        data: {
+          success: false,
+          message: '手机号不存在'
+        }
+      })
+    }
   })
 })
 // 分类接口

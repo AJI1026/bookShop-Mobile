@@ -5,11 +5,14 @@
     <!--内容-->
     <section>
       <div class="login-phone">
-        <input type="text" placeholder="请输入手机号" pattern="[0-9]*"/>
+        <input type="text" v-model="userTel" placeholder="请输入手机号" pattern="[0-9]*"/>
       </div>
       <div class="login-code">
         <input type="text" placeholder="请输入短信验证码" pattern="[0-9]*"/>
-        <button>获取短信验证码</button>
+        <button
+            @click="sendCode"
+            :disabled="disabled"
+        >{{codeMsg}}</button>
       </div>
       <div class="login-btn">
         登录
@@ -31,8 +34,11 @@
 </template>
 
 <script>
+// 组件
 import Tabbar from "@/components/common/Tabbar";
 import Header from "@/views/login/Header";
+// mint-ui组件
+import {Toast} from "mint-ui";
 
 export default {
   name: "Login-container",
@@ -42,13 +48,53 @@ export default {
   },
   data() {
     return {
-
+      userTel: '', // 用户手机号
+      rules: {
+        // 手机验证
+        userTel: {
+          rule: /^1[3456789]\d{9}$/,
+          message: '手机号不能为空，并且是11位数字'
+        }
+      },
+      disabled: false,
+      codeNum: 60,
+      codeMsg: '获取短信验证码'
     }
   },
   methods: {
     // 密码登录
     goUserLogin() {
       this.$router.push('/userLogin')
+    },
+    // 点击验证码按钮
+    sendCode() {
+      // 验证
+      if(!this.validate('userTel')) return;
+      // 禁用按钮
+      this.disabled = true;
+      // 倒计时
+      let timer = setInterval(() => {
+        --this.codeNum;
+        this.codeMsg = `重新发送${this.codeNum}`;
+      },1000)
+      // 判断什么时候停止
+      setTimeout(() => {
+        clearInterval(timer);
+        this.codeNum = 60;
+        this.disabled = false;
+        this.codeMsg = '获取短信验证码';
+      },60000)
+    },
+    // 验证信息提示
+    validate(key) {
+      let bool = true;
+      if(!this.rules[key].rule.test(this[key])) {
+        // 提示信息
+        Toast(this.rules[key].message);
+        bool = false;
+        return false;
+      }
+      return bool
     },
   }
 }
