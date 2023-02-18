@@ -8,13 +8,13 @@
         <input type="text" v-model="userTel" placeholder="请输入手机号" pattern="[0-9]*"/>
       </div>
       <div class="login-code">
-        <input type="text" placeholder="请输入短信验证码" pattern="[0-9]*"/>
+        <input type="text" v-model="userCode" placeholder="请输入短信验证码" pattern="[0-9]*"/>
         <button
             @click="sendCode"
             :disabled="disabled"
         >{{codeMsg}}</button>
       </div>
-      <div class="login-btn">
+      <div class="login-btn" @click="login">
         登录
       </div>
       <div class="tab">
@@ -39,6 +39,7 @@ import Tabbar from "@/components/common/Tabbar";
 import Header from "@/views/login/Header";
 // mint-ui组件
 import {Toast} from "mint-ui";
+import http from '@/common/api/request';
 
 export default {
   name: "Login-container",
@@ -58,7 +59,9 @@ export default {
       },
       disabled: false,
       codeNum: 60,
-      codeMsg: '获取短信验证码'
+      codeMsg: '获取短信验证码',
+      code: '', // 短信验证码
+      userCode: '', // 用户输入的验证码
     }
   },
   methods: {
@@ -70,6 +73,18 @@ export default {
     sendCode() {
       // 验证
       if(!this.validate('userTel')) return;
+      // 请求短信验证码接口
+      http.$axios({
+        url: '/api/code',
+        method: 'POST',
+        data: {
+          phone: this.userTel
+        }
+      }).then(res => {
+        if(res.success) {
+          this.code = res.data
+        }
+      })
       // 禁用按钮
       this.disabled = true;
       // 倒计时
@@ -96,6 +111,23 @@ export default {
       }
       return bool
     },
+    // 点击登录
+    login() {
+      if(this.code === this.userCode) {
+        // 证明用户输入的短信验证码是正确的
+        // 发送请求
+        http.$axios({
+          url: '/api/addUser',
+          method: 'POST',
+          data: {
+            phone: this.userTel
+          }
+        }).then(res => {
+          if(!res.success) return;
+          console.log(res)
+        })
+      }
+    }
   }
 }
 </script>

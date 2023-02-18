@@ -1,7 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const connection = require('../db/sql');
-const User = require('../db/user')
+const User = require('../db/user');
+// 引入短信验证
+const QcloudSms = require("qcloudsms_js");
+// 内置哈希加密
+const crypto = require("crypto");
+const hash = crypto.createHash('sha256');
 
 /* GET home page. */
 router.get('/', function(req, res) {
@@ -73,6 +78,88 @@ router.post('/api/login', function (req, res) {
       })
     }
   })
+})
+// 增加一个用户
+router.post('/api/addUser', function (req, res) {
+  let params = {
+    userTel: req.body.phone
+  }
+  // 查询用户是否存在
+  connection.query(User.queryUserTel(params), function (err, result) {
+    if(err) throw err;
+    // 用户存在
+    if(result.length > 0) {
+      res.send({
+        code: 200,
+        data: {
+          success: true,
+          message: '登录成功',
+          data: result[0]
+        }
+      })
+    } else {
+      // 不存在，新增
+      connection.query(User.insertData(params), function() {
+        connection.query(User.queryUserTel(params), function (ERR, RES) {
+          res.send({
+            code: 200,
+            data: {
+              success: true,
+              message: '登录成功',
+              data: RES[0]
+            }
+          })
+        })
+      })
+    }
+  })
+})
+// 短信验证码
+router.post('/api/code', function(req, res) {
+  // 接收前端发送的手机号
+  let tel = req.body.phone;
+
+  // 短信应用SDK AppID
+  let appid = 1400187558;  // SDK AppID是1400开头
+
+  // 短信应用SDK AppKey
+  let appkey = "dc9dc3391896235ddc2325685047edc7";
+
+  // 需要发送短信的手机号码
+  let phoneNumbers = [tel];
+
+  // 短信模板ID，需要在短信应用中申请
+  let templateId = 285590;  // NOTE: 这里的模板ID`7839`只是一个示例，真实的模板ID需要在短信控制台中申请
+
+  // 签名
+  let smsSign = "三人行慕课";  // NOTE: 这里的签名只是示例，请使用真实的已申请的签名, 签名参数使用的是`签名内容`，而不是`签名ID`
+
+  // 实例化QcloudSms
+  let qcloudsms = QcloudSms(appid, appkey);
+
+  // 设置请求回调处理, 这里只是演示，用户需要自定义相应处理回调
+  function callback(ERR, RES) {
+    if (ERR) {
+      console.log("err: ", ERR);
+    } else {
+      // 哈希加密验证码
+
+      res.send({
+        code: 200,
+        data: {
+          success: true,
+          data: RES.req.body.params[0]
+        }
+      })
+    }
+  }
+
+  let ssender = qcloudsms.SmsSingleSender();
+  // 往手机上发送的短信
+  let params = [Math.floor(Math.random()*(9999-1000)) + 1000];
+  ssender.sendWithParam(86, phoneNumbers[0], templateId,
+      params, smsSign, "", "", callback);  // 签名参数不能为空串
+
 })
 // 分类接口
 router.get('/api/goods/list', function (req, res) {
