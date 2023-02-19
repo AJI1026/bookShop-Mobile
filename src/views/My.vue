@@ -2,12 +2,17 @@
   <div id="my" class="container">
     <!--头部-->
     <header>
-      <div class="login" @click="goLogin">登录/注册</div>
+      <div class="user-info" v-if="loginStatus">
+        <img :src="userInfo.imgUrl" alt=""/>
+        <span style="font-size: 16px">{{userInfo.nickName}}</span>
+      </div>
+      <div class="login" @click="goLogin" v-else>登录/注册</div>
     </header>
     <!--内容-->
     <section>
-      <ul>
-        <li>地址管理 </li>
+      <ul style="font-size: 14px">
+        <li>地址管理</li>
+        <li v-if="loginStatus" @click="loginOut">退出登录</li>
       </ul>
     </section>
     <!--底部-->
@@ -17,11 +22,18 @@
 
 <script>
 import Tabbar from '@/components/common/Tabbar'
+import {mapMutations, mapState} from 'vuex';
 
 export default {
   name: 'my-container',
   components: {
     Tabbar
+  },
+  computed: {
+    ...mapState({
+      loginStatus: state => state.user.loginStatus,
+      userInfo: state => state.user.userInfo
+    })
   },
   data() {
     return  {
@@ -29,9 +41,10 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['loginOut']),
     goLogin() {
       this.$router.push('/login');
-    }
+    },
   }
 }
 </script>
@@ -53,13 +66,28 @@ header {
     border-radius: 12px;
     padding: 10px 20px;
   }
+  .user-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    img {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+    }
+    span {
+      padding: 30px 0;
+      text-align: center;
+      color: white;
+    }
+  }
 }
 section {
   flex: 1;
   overflow: hidden;
   ul li {
-    padding: 20px;
-
+    padding: 30px 40px;
   }
 }
 </style>

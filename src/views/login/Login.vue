@@ -41,6 +41,8 @@ import Header from "@/views/login/Header";
 import {Toast} from "mint-ui";
 import http from '@/common/api/request';
 
+import { mapMutations } from 'vuex';
+
 export default {
   name: "Login-container",
   components: {
@@ -65,6 +67,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['USER_LOGIN']),
     // 密码登录
     goUserLogin() {
       this.$router.push('/userLogin')
@@ -124,8 +127,13 @@ export default {
             phone: this.userTel
           }
         }).then(res => {
-          console.log(res)
           if(!res.success) return;
+          // 登录成功，存储登录信息
+          this.USER_LOGIN(res.data)
+          // 跳转到我的页面
+          this.$router.push({
+            path: '/my'
+          })
         })
       }
     },

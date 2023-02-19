@@ -41,6 +41,8 @@ import http from '@/common/api/request';
 // mint-ui组件
 import { Toast } from 'mint-ui';
 
+import { mapMutations } from 'vuex';
+
 export default {
   name: "userLogin",
   data() {
@@ -66,6 +68,7 @@ export default {
     Header,
   },
   methods: {
+    ...mapMutations(['USER_LOGIN']),
     // 短信登录
     goLogin() {
       this.$router.push('/login')
@@ -89,7 +92,11 @@ export default {
         // 登录失败
         if(!res.success) return;
         // 登录成功，存储登录信息
-        console.log(res)
+        this.USER_LOGIN(res.data)
+        // 跳转到我的页面
+        this.$router.push({
+          path: '/my'
+        })
       })
     },
     // 验证信息提示

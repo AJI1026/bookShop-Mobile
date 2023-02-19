@@ -38,6 +38,7 @@ import Header from "@/views/login/Header";
 import Tabbar from "@/components/common/Tabbar";
 import http from "@/common/api/request";
 import {Toast} from "mint-ui";
+import {mapMutations} from "vuex";
 
 export default {
   name: "register-container",
@@ -69,6 +70,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['USER_LOGIN']),
     // 密码登录
     goUserLogin() {
       this.$router.push('/userLogin')
@@ -137,7 +139,12 @@ export default {
           pwd: this.userPwd
         }
       }).then(res => {
-        console.log(res);
+        // 登录成功，存储登录信息
+        this.USER_LOGIN(res.data)
+        // 跳转到我的页面
+        this.$router.push({
+          path: '/my'
+        })
       })
     }
   }

@@ -14,6 +14,9 @@ export default {
     return {
     }
   },
+  created() {
+    this.$store.commit('INIT_USER');
+  }
 }
 </script>
 
