@@ -11,8 +11,8 @@ const User = {
     // 新增用户
     insertData(option) {
         let userTel = option.userTel;
-        return 'insert into user_list (tel, pwd, imgUrl, nickName, token) values("'+userTel+'", "666666", "", "", "")';
-
+        let userPwd = option.userPwd || '000000';
+        return 'INSERT INTO user_list (tel, pwd, imgUrl, nickName, token) VALUES ("'+userTel+'", "'+userPwd+'", "1.png", "1", "1")';
     },
 }
 exports = module.exports = User;

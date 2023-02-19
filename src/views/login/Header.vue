@@ -8,8 +8,8 @@
         <span style="font-size: 16px">登录</span>
       </slot>
     </div>
-    <div>
-      <i class="iconfont icon-kefu" style="font-size: 20px"></i>
+    <div @click="goHome">
+      <i class="iconfont icon-shouye" style="font-size: 20px"></i>
     </div>
   </header>
 </template>
@@ -25,6 +25,9 @@ export default {
   methods: {
     goBack() {
       this.$router.back()
+    },
+    goHome() {
+      this.$router.push('/home')
     }
   }
 }

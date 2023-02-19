@@ -10,6 +10,11 @@ import SearchIndex from "@/views/Search/Search-index";
 import Detail from "@/views/Detail";
 import Login from "@/views/login/Login";
 import UserLogin from "@/views/login/userLogin";
+import Register from "@/views/login/Register";
+import Agreement from "@/views/login/Agreement";
+import RecoveryIndex from "@/views/recovery/RecoveryIndex";
+import RecoveryBtn from "@/views/recovery/RecoveryBtn";
+import Recovery from "@/views/recovery/Recovery";
 
 Vue.use(VueRouter)
 
@@ -89,6 +94,36 @@ const routes = [
         path : "/userLogin",
         name: "UserLogin",
         component: UserLogin,
+    },
+    // 用户注册
+    {
+        path : "/register",
+        name: "Register",
+        component: Register,
+    },
+    // 协议页面
+    {
+        path : "/agreement",
+        name: "Agreement",
+        component: Agreement,
+    },
+    // 密码恢复
+    {
+        path : "/recovery",
+        name: "Recovery",
+        children: [
+            {
+                path : "/",
+                name: "RecoveryIndex",
+                component: RecoveryIndex,
+            },
+            {
+                path : "/recoveryBtn",
+                name: "RecoveryBtn",
+                component: RecoveryBtn,
+            },
+        ],
+        component: Recovery,
     },
 ]
 

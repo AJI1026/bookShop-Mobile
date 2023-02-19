@@ -4,9 +4,6 @@ const connection = require('../db/sql');
 const User = require('../db/user');
 // 引入短信验证
 const QcloudSms = require("qcloudsms_js");
-// 内置哈希加密
-const crypto = require("crypto");
-const hash = crypto.createHash('sha256');
 
 /* GET home page. */
 router.get('/', function(req, res) {
@@ -100,13 +97,100 @@ router.post('/api/addUser', function (req, res) {
     } else {
       // 不存在，新增
       connection.query(User.insertData(params), function() {
-        connection.query(User.queryUserTel(params), function (ERR, RES) {
+        connection.query(User.queryUserTel(params), function (e, r) {
           res.send({
             code: 200,
             data: {
               success: true,
-              message: '登录成功',
-              data: RES[0]
+              message: '创建成功',
+              data: r[0]
+            }
+          })
+        })
+      })
+    }
+  })
+})
+// 找回密码，查询用户是否存在
+router.post('/api/searchUser', function (req, res) {
+  let params = {
+    userTel: req.body.phone
+  }
+  // 查询用户
+  connection.query(User.queryUserTel(params), function (error, result) {
+    if(error) throw error;
+    if(result.length > 0) {
+      res.send({
+        code : 200,
+        data: {
+          success : true
+        }
+      })
+    } else {
+      res.send({
+        code : 0,
+        data: {
+          success: false,
+          message: '用户不存在'
+        }
+      })
+    }
+  })
+})
+// 修改密码
+router.post('/api/reset', function (req, res) {
+  let params = {
+    userTel: req.body.phone,
+    userPwd: req.body.pwd,
+  }
+  // 查询用户是否存在
+  connection.query(User.queryUserTel(params), function (error, result) {
+    if(error) throw error;
+    // 某一条记录id
+    let id = result[0].id;
+    let pwd = result[0].pwd;
+    connection.query(`update user_list set pwd = replace(pwd, '${pwd}','${params.userPwd}') where id = ${id}`, function () {
+      res.send({
+        code:200,
+        data:{
+          success: true,
+          message: '密码修改成功'
+        }
+      })
+    })
+  })
+})
+// 注册
+router.post('/api/register', function (req, res) {
+  let params = {
+    userTel: req.body.phone,
+    userPwd: req.body.pwd,
+  }
+  // 查询用户是否存在
+  connection.query(User.queryUserTel(params), function (err, result) {
+    if(err) throw err;
+    // 用户存在
+    if(result.length > 0) {
+      res.send({
+        code: 200,
+        data: {
+          success: true,
+          message: '登录成功',
+          data: result[0]
+        }
+      })
+    } else {
+      // 不存在，新增
+      connection.query(User.insertData(params), function(err, result) {
+        if(err) throw err;
+        console.log(result)
+        connection.query(User.queryUserTel(params), function (e, r) {
+          res.send({
+            code: 200,
+            data: {
+              success: true,
+              message: '创建成功',
+              data: r[0]
             }
           })
         })
@@ -120,35 +204,33 @@ router.post('/api/code', function(req, res) {
   let tel = req.body.phone;
 
   // 短信应用SDK AppID
-  let appid = 1400187558;  // SDK AppID是1400开头
+  let appid = 1400796639;  // SDK AppID是1400开头
 
   // 短信应用SDK AppKey
-  let appkey = "dc9dc3391896235ddc2325685047edc7";
+  let appkey = "b437e8196245069d528276de7b44da35";
 
   // 需要发送短信的手机号码
   let phoneNumbers = [tel];
 
   // 短信模板ID，需要在短信应用中申请
-  let templateId = 285590;  // NOTE: 这里的模板ID`7839`只是一个示例，真实的模板ID需要在短信控制台中申请
+  let templateId = 1707218;  // NOTE: 这里的模板ID`7839`只是一个示例，真实的模板ID需要在短信控制台中申请
 
   // 签名
-  let smsSign = "三人行慕课";  // NOTE: 这里的签名只是示例，请使用真实的已申请的签名, 签名参数使用的是`签名内容`，而不是`签名ID`
+  let smsSign = "阿集的小屋";  // NOTE: 这里的签名只是示例，请使用真实的已申请的签名, 签名参数使用的是`签名内容`，而不是`签名ID`
 
   // 实例化QcloudSms
   let qcloudsms = QcloudSms(appid, appkey);
 
   // 设置请求回调处理, 这里只是演示，用户需要自定义相应处理回调
-  function callback(ERR, RES) {
-    if (ERR) {
-      console.log("err: ", ERR);
+  function callback(err, ress) {
+    if (err) {
+      console.log("err: ", err);
     } else {
-      // 哈希加密验证码
-
       res.send({
         code: 200,
         data: {
           success: true,
-          data: RES.req.body.params[0]
+          data: ress.req.body.params[0]
         }
       })
     }

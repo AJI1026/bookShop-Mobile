@@ -1,7 +1,9 @@
 <template>
-  <div class="login container">
+  <div class="register container">
     <!--头部-->
-    <Header></Header>
+    <Header>
+      <span>注册</span>
+    </Header>
     <!--内容-->
     <section>
       <div class="login-phone">
@@ -14,17 +16,15 @@
             :disabled="disabled"
         >{{codeMsg}}</button>
       </div>
-      <div class="login-btn" @click="login">
-        登录
+      <div class="login-pwd">
+        <input type="text" v-model="userPwd" placeholder="请设置密码" pattern="[0-9]*"/>
       </div>
-      <div class="tab">
-        <span @click="goUserLogin">
-          <i class="iconfont icon-mima"></i>
-          密码登录
-        </span>
-        <span @click="goRegister">
-          <i class="iconfont icon-register"></i>
-          快速注册
+      <div class="login-btn" @click="register">
+        注册
+      </div>
+      <div class="agreement">
+        <span>
+          注册即视为同意<a href="#/agreement">《勇者探险公会注册协议》</a>
         </span>
       </div>
     </section>
@@ -34,28 +34,32 @@
 </template>
 
 <script>
-// 组件
-import Tabbar from "@/components/common/Tabbar";
 import Header from "@/views/login/Header";
-// mint-ui组件
+import Tabbar from "@/components/common/Tabbar";
+import http from "@/common/api/request";
 import {Toast} from "mint-ui";
-import http from '@/common/api/request';
 
 export default {
-  name: "Login-container",
+  name: "register-container",
   components: {
-    Tabbar,
     Header,
+    Tabbar,
   },
   data() {
     return {
       userTel: '', // 用户手机号
+      userPwd: '', // 用户输入的密码
       rules: {
         // 手机验证
         userTel: {
           rule: /^1[3456789]\d{9}$/,
           message: '手机号不能为空，并且是11位数字'
-        }
+        },
+        // 密码验证
+        userPwd: {
+          rule: /^\w{6,12}$/,
+          message: '密码不能为空，并且是6-12位'
+        },
       },
       disabled: false,
       codeNum: 60,
@@ -71,8 +75,9 @@ export default {
     },
     // 点击验证码按钮
     sendCode() {
-      // 验证
+      // 验证手机号
       if(!this.validate('userTel')) return;
+
       // 请求短信验证码接口
       http.$axios({
         url: '/api/code',
@@ -112,27 +117,29 @@ export default {
       }
       return bool
     },
-    // 点击登录
-    login() {
-      if(this.code === Number(this.userCode)) {
-        // 证明用户输入的短信验证码是正确的
-        // 发送请求
-        http.$axios({
-          url: '/api/addUser',
-          method: 'POST',
-          data: {
-            phone: this.userTel
-          }
-        }).then(res => {
-          console.log(res)
-          if(!res.success) return;
-        })
+    // 点击注册
+    register() {
+      // 密码验证正确
+      if(!this.validate('userPwd')) return;
+
+      // 判断验证码是否正确
+      if(this.code !== Number(this.userCode)) {
+        Toast('验证码不正确');
+        return;
       }
-    },
-    // 快速注册
-    goRegister() {
-      this.$router.push('/register');
-    },
+      // 证明用户输入的短信验证码是正确的
+      // 发送请求
+      http.$axios({
+        url: '/api/register',
+        method: 'POST',
+        data: {
+          phone: this.userTel,
+          pwd: this.userPwd
+        }
+      }).then(res => {
+        console.log(res);
+      })
+    }
   }
 }
 </script>
@@ -180,6 +187,11 @@ section {
       margin-left: 10px;
     }
   }
+  .login-pwd {
+    input {
+      width: 100%;
+    }
+  }
   .login-btn {
     display: flex;
     align-items: center;
@@ -189,10 +201,12 @@ section {
     height: 70px;
     background-color: #b0352f;
   }
-  .tab {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
+  .agreement {
+    span {
+      a {
+        color: sandybrown;
+      }
+    }
   }
 }
 </style>
