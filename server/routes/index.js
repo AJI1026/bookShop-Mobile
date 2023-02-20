@@ -11,6 +11,23 @@ router.get('/', function(req, res) {
   res.render('index', { title: 'Express' });
 });
 
+// 删除购物车数据
+router.post('/api/deleteCart', function (req, res) {
+  let arrId = req.body.arrId;
+  for(let i = 0; i < arrId.length; i++) {
+    connection.query(`delete from cart_list where id=${arrId[i]}`, function (error, result) {
+      console.log(result);
+      if(error) throw error;
+      res.send({
+        data: {
+          code: 200,
+          success: true,
+          message: '删除成功',
+        }
+      })
+    })
+  }
+})
 // 获取购物车数据
 router.post('/api/cartList', function (req, res) {
   let token = req.headers.token;

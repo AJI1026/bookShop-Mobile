@@ -1,4 +1,6 @@
 import { CART_LIST, CHECK_ALL, UN_CHECK_ALL, CHECK_EACH } from "@/store/modules/mutations-types";
+import {Dialog, Toast} from "vant";
+import http from "@/common/api/request";
 
 export default {
     state: {
@@ -56,10 +58,52 @@ export default {
             // 如果没有，就添加
             state.selectList.push(id);
         },
+        delGoods(state) {
+            state.list = state.list.filter(v => {
+                return state.selectList.indexOf(v.id) === -1
+            })
+        },
     },
     actions : {
+        // 切换全选状态
         checkAllFn({commit, getters}) {
             getters.isCheckedAll ? commit('UN_CHECK_ALL') : commit('CHECK_ALL');
-        }
+        },
+        delGoodsFn({commit, state}, id) {
+            // 如果没有选中，则提示信息
+            if(state.selectList.length === 0) {
+                Toast('请选择商品')
+            } else {
+                let arrCart = [];
+                Dialog.confirm({
+                    message: '确定要删除该技能书吗？',
+                }).then(() => {
+                    if(typeof id === 'number') {
+                        // 单个删除
+                        arrCart = [id];
+                        let index = state.list.findIndex(v => {
+                            return v.id === id
+                        })
+                        state.list.splice(index,1);
+                    } else {
+                        // 多选删除
+                        arrCart = state.selectList;
+                        commit('delGoods');
+                        // 全不选
+                        commit('UN_CHECK_ALL');
+                    }
+                    http.$axios({
+                        url: '/api/deleteCart',
+                        method: 'POST',
+                        data: {
+                            arrId: arrCart,
+                        }
+                    }).then(res => {
+                        console.log(res);
+                    })
+                })
+            }
+
+        },
     }
 }

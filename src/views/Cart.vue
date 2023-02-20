@@ -20,7 +20,7 @@
           <div class="goods">
             <div class="goods-title">
               <span>{{item.goods_name}}</span>
-              <i class="iconfont icon-shanchu" style="font-size: 18px"></i>
+              <i class="iconfont icon-shanchu" style="font-size: 18px" @click="delGoodsFn(item.id)"></i>
             </div>
             <div class="goods-price">¥{{item.goods_price | priceFilter}}</div>
             <van-stepper v-model="quantity" integer></van-stepper>
@@ -55,9 +55,8 @@
           </span>
         </div>
       </div>
-      <div class="check" style="font-size: 16px">
-        {{isEditStatus ? "删除":"去结算"}}
-      </div>
+      <div class="check" style="font-size: 16px" v-if="isEditStatus" @click="delGoodsFn">删除</div>
+      <div class="check" style="font-size: 16px" v-else>去结算</div>
     </footer>
   </div>
 </template>
@@ -89,7 +88,7 @@ export default {
   },
   methods: {
     ...mapMutations(['CART_LIST', 'CHECK_EACH']),
-    ...mapActions(['checkAllFn']),
+    ...mapActions(['checkAllFn', 'delGoodsFn']),
     // 返回
     goBack() {
       this.$router.back();
