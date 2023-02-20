@@ -59,7 +59,6 @@ const routes = [
     // 搜索页面
     {
         path : "/search",
-        name: "Search",
         component: Search,
         children: [
             {
@@ -110,7 +109,6 @@ const routes = [
     // 密码恢复
     {
         path : "/recovery",
-        name: "Recovery",
         children: [
             {
                 path : "/",

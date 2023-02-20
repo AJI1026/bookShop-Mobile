@@ -4,12 +4,67 @@ const connection = require('../db/sql');
 const User = require('../db/user');
 // 引入短信验证
 const QcloudSms = require("qcloudsms_js");
+let jwt = require("jsonwebtoken");
 
 /* GET home page. */
 router.get('/', function(req, res) {
   res.render('index', { title: 'Express' });
 });
 
+// 获取购物车数据
+router.post('/api/cartList', function (req, res) {
+  let token = req.headers.token;
+  let tokenObj = jwt.decode(token);
+  // 查询用户是否存在
+  connection.query(`select * from user_list where tel=${tokenObj.tel}`, function (error, result) {
+    if(error) throw error;
+    // 用户id
+    let UID = result[0].id;
+    connection.query(`select * from cart_list where uid=${UID}`, function (error, result) {
+      if(error) throw error;
+      res.send({
+        data: {
+          code: 200,
+          success: true,
+          message: "查询成功",
+          data: {
+            result
+          }
+        }
+      })
+    })
+  })
+})
+// 加入购物车
+router.post('/api/addCart', function (req, res) {
+  // 前端返回的参数
+  let goodsId = req.body.goodsId;
+  // token
+  let token = req.headers.token;
+  let tokenObj = jwt.decode(token);
+  // 查询用户
+  connection.query(`select * from user_list where tel = ${tokenObj.tel}`, function (error, result) {
+    // 用户ID
+    let UID = result[0].id;
+    // 查询商品
+    connection.query(`select * from goods_list where id=${goodsId}`, function (error, result) {
+      let goodsName = result[0].name;
+      let goodsPrice = result[0].price;
+      let goodsImgUrl = result[0].imgUrl;
+      connection.query(`insert into cart_list (uid, goods_id, goods_name, goods_price, goods_num, goods_imgUrl) values ("${UID}", "${goodsId}", "${goodsName}", "${goodsPrice}", "1", "${goodsImgUrl}")`, function (error, result) {
+        if(error) throw error;
+        console.log(result);
+        res.send({
+          data: {
+            code: 200,
+            success: true,
+            message: '添加成功'
+          }
+        })
+      })
+    })
+  })
+})
 // 查询商品数据接口
 router.get('/api/goods/shopList', function (req, res) {
   let [searchName, sortName] = Object.keys(req.query);
@@ -39,7 +94,6 @@ router.post('/api/login', function (req, res) {
     userTel: req.body.userTel,
     userPwd: req.body.userPwd
   };
-
   // 查询用户手机是否存在
   connection.query(User.queryUserTel(params), function (error, result) {
     // 手机号存在

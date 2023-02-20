@@ -1,7 +1,7 @@
 <template>
   <div id="list-container">
     <!--头部-->
-    <header>
+    <header v-show="isShow">
       <div class="returns" @click="goBack">
         <i class="iconfont icon-back"></i>
       </div>
@@ -71,6 +71,7 @@ export default {
       rightScroll: '', // 右侧滑动
       allHeight: [], // 存放右侧每块数据高度
       rightScrollY: '', // 右侧滚动距离
+      isShow: true, // 头部默认显示
     }
   },
   methods: {
@@ -114,6 +115,8 @@ export default {
         // 右侧滑动
         this.rightScroll = new BetterScroll(this.$refs.right, {
           probeType: 3,
+          bounce: false, // 取消回弹效果
+          click: true,
         })
         // 统计右侧部分每块高度
         let height = 0;
@@ -127,7 +130,12 @@ export default {
         })
         // 得到右侧滚动的值，probeType默认为0
         this.rightScroll.on('scroll',(pos) => {
-          this.rightScrollY = -pos.y
+          this.rightScrollY = -pos.y;
+          if( Math.abs(pos.y) >= 50 ) {
+            this.isShow = false;
+          } else {
+            this.isShow = true;
+          }
         })
       })
     })

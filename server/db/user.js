@@ -12,7 +12,16 @@ const User = {
     insertData(option) {
         let userTel = option.userTel;
         let userPwd = option.userPwd || '000000';
-        return 'INSERT INTO user_list (tel, pwd, imgUrl, nickName, token) VALUES ("'+userTel+'", "'+userPwd+'", "1.png", "1", "1")';
+        // 引入jwt
+        let jwt = require('jsonwebtoken');
+        // 用户信息
+        let payload = {tel : userTel};
+        // 口令
+        let secret = 'AJIDEXIAOWU';
+        // 生成token
+        let token = jwt.sign(payload, secret);
+
+        return 'INSERT INTO user_list (tel, pwd, imgUrl, nickName, token) VALUES ("'+userTel+'", "'+userPwd+'", "./images/default0.jpg", "初始用户", "'+token+'")';
     },
 }
 exports = module.exports = User;

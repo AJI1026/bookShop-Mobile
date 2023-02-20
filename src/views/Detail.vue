@@ -47,7 +47,7 @@
       </section>
     <!--尾部-->
     <footer>
-      <div>加入购物车</div>
+      <div @click="addCart">加入购物车</div>
       <div style="background-color: red">立即购买</div>
     </footer>
   </div>
@@ -64,6 +64,7 @@ import BetterScroll from "better-scroll";
 import {ObserveDom} from "better-scroll";
 BetterScroll.use(ObserveDom)
 import http from '@/common/api/request';
+import {Toast} from "mint-ui";
 
 export default {
   name: "Detail-container",
@@ -123,7 +124,24 @@ export default {
         }
       })
       this.goods = res
-    }
+    },
+    // 加入购物车
+    addCart() {
+      http.$axios({
+        url: '/api/addCart',
+        method: 'POST',
+        data: {
+          goodsId: this.$route.query.id
+        },
+        headers: {
+          token: true,
+        }
+      }).then(res => {
+        if(res.success) {
+          Toast("添加购物车成功");
+        }
+      })
+    },
   },
   created() {
     this.id = this.$route.query.id;

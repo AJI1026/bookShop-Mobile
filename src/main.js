@@ -13,11 +13,15 @@ import LyTab from 'ly-tab';
 Vue.use(LyTab);
 // 引入加载
 import { Lazyload, Indicator } from 'mint-ui';
-import 'mint-ui/lib/style.css'
-Vue.use(Lazyload)
-Vue.use(Indicator)
+import 'mint-ui/lib/style.css';
+Vue.use(Lazyload);
+Vue.use(Indicator);
+// 全局引入vant
+import Vant from 'vant';
+import 'vant/lib/index.css';
+Vue.use(Vant)
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
 
 new Vue({
