@@ -3,17 +3,17 @@
     <header>
       <i class="iconfont icon-back" style="font-size: 20px" @click="goBack"></i>
       <span style="font-size: 14px">购物车</span>
-      <span style="font-size: 14px">编辑</span>
+      <span style="font-size: 14px" @click="edit" v-text="isEditStatus? '完成': '编辑'"></span>
     </header>
     <section v-if="list.length !== 0">
       <div class="cart-title">
-        <van-checkbox v-model="choose"></van-checkbox>
+        <van-checkbox @click="checkAllFn" :value="isCheckedAll"></van-checkbox>
         <span style="font-size: 14px">商品</span>
       </div>
       <ul>
         <li v-for="(item, index) in list" :key="index">
           <div class="cart-check">
-            <van-checkbox v-model="choose"></van-checkbox>
+            <van-checkbox @click="CHECK_EACH(index)" v-model="item.checked"></van-checkbox>
           </div>
           <h2><img :src="item.goods_imgUrl" alt=""></h2>
 
@@ -39,36 +39,39 @@
     </section>
     <footer>
       <div class="radio">
-        <van-checkbox v-model="choose"></van-checkbox>
+        <van-checkbox @click="checkAllFn" :value="isCheckedAll"></van-checkbox>
       </div>
-      <div class="total">
+      <div class="total" v-show="!isEditStatus">
         <div>
           共有
-          <span class="total-goods">1</span>
+          <span class="total-goods">{{total.num}}</span>
           件商品
         </div>
         <div>
           <span>总计：</span>
           <span>
             <i class="iconfont icon-x_jiage"></i>
-            <span class="total-price">128.00 + 0大树币</span>
+            <span class="total-price">{{total.price | priceFilter}} + 0大树币</span>
           </span>
         </div>
       </div>
-      <div class="check" style="font-size: 16px">去结算</div>
+      <div class="check" style="font-size: 16px">
+        {{isEditStatus ? "删除":"去结算"}}
+      </div>
     </footer>
   </div>
 </template>
 
 <script>
 import http from '@/common/api/request';
-import {mapMutations, mapState} from "vuex";
+import {mapMutations, mapState, mapActions, mapGetters} from "vuex";
 
 export default {
   name: 'cart-container',
   data() {
     return  {
-      choose: true,
+      isEditStatus: false, // 编辑状态
+      choose: true, // 全选数据
       quantity: 1, // 商品数量
     }
   },
@@ -81,10 +84,12 @@ export default {
   computed: {
     ...mapState({
       list: state => state.cart.list
-    })
+    }),
+    ...mapGetters(['isCheckedAll','total'])
   },
   methods: {
-    ...mapMutations(['CART_LIST']),
+    ...mapMutations(['CART_LIST', 'CHECK_EACH']),
+    ...mapActions(['checkAllFn']),
     // 返回
     goBack() {
       this.$router.back();
@@ -99,7 +104,14 @@ export default {
           token: true
         }
       })
+      res.data.result.forEach(v => {
+        v['checked'] = true;
+      })
       this.CART_LIST(res.data.result);
+    },
+    // 点击编辑
+    edit() {
+      this.isEditStatus = !this.isEditStatus;
     },
   },
   created() {
