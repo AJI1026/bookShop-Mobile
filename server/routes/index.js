@@ -10,7 +10,58 @@ let jwt = require("jsonwebtoken");
 router.get('/', function(req, res) {
   res.render('index', { title: 'Express' });
 });
-
+// 增加新的收货地址
+router.post('/api/newAddress', function (req, res) {
+  let body = req.body;
+  // 前端发送的地址数据
+  let [name, tel, province, city, county, addressDetail, isDefault] = [
+    body.name,
+    body.tel,
+    body.province,
+    body.city,
+    body.county,
+    body.addressDetail,
+    body.isDefault,
+  ]
+  // 查询用户
+  connection.query(`select * from user_list where tel=${tel}`, function (error, result) {
+    if(error) throw error;
+    // 用户id
+    let UID = result[0].id;
+    // 增加一条地址数据
+    connection.query(`insert into address_list (uid, name, tel, province, city, county, addressDetail, isDefault) values ("${UID}","${name}","${tel}","${province}","${city}","${county}","${addressDetail}","${isDefault}")`, function (error, result) {
+      if(error) throw error;
+      res.send({
+        data: {
+          code: 200,
+          success: true,
+          message: '新增地址成功'
+        }
+      })
+    })
+  })
+})
+// 修改购物车商品数量
+router.post('/api/updateNum', function(req, res) {
+  let id = req.body.id;
+  let changeNum = req.body.num;
+  connection.query(`select * from cart_list where id=${id}`, function (error, result) {
+    if(error) throw error;
+    // 原来的数量
+    let originNum = result[0].goods_num;
+    connection.query(`update cart_list set goods_num = replace(goods_num,${originNum},${changeNum}) where id=${id}`, function (error, result) {
+      if(error) throw error;
+      console.log(result)
+      res.send({
+        data: {
+          code: 200,
+          success: true,
+          message: '修改成功'
+        }
+      })
+    })
+  })
+})
 // 删除购物车数据
 router.post('/api/deleteCart', function (req, res) {
   let arrId = req.body.arrId;
@@ -68,16 +119,36 @@ router.post('/api/addCart', function (req, res) {
       let goodsName = result[0].name;
       let goodsPrice = result[0].price;
       let goodsImgUrl = result[0].imgUrl;
-      connection.query(`insert into cart_list (uid, goods_id, goods_name, goods_price, goods_num, goods_imgUrl) values ("${UID}", "${goodsId}", "${goodsName}", "${goodsPrice}", "1", "${goodsImgUrl}")`, function (error, result) {
+      // 查询当前用户在之前是否添加过本商品
+      connection.query(`select * from cart_list where uid=${UID} and goods_id=${goodsId}`, function (error, result) {
+        let num = result[0].goods_num;
         if(error) throw error;
-        console.log(result);
-        res.send({
-          data: {
-            code: 200,
-            success: true,
-            message: '添加成功'
-          }
-        })
+        // 用户之前添加过该商品
+        if(result.length > 0) {
+          connection.query(`update cart_list set goods_num = replace(goods_num, ${num}, ${parseInt(num) + 1}) where id = ${result[0].id}`, function (error, result) {
+            console.log(result)
+            if(error) throw error;
+            res.send({
+              data: {
+                code:200,
+                success: true,
+                message: '添加成功'
+              }
+            })
+          })
+        } else {
+          connection.query(`insert into cart_list (uid, goods_id, goods_name, goods_price, goods_num, goods_imgUrl) values ("${UID}", "${goodsId}", "${goodsName}", "${goodsPrice}", "1", "${goodsImgUrl}")`, function (error, result) {
+            if(error) throw error;
+            console.log(result);
+            res.send({
+              data: {
+                code: 200,
+                success: true,
+                message: '添加成功'
+              }
+            })
+          })
+        }
       })
     })
   })

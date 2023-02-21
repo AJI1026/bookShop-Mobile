@@ -11,7 +11,7 @@
     <!--内容-->
     <section>
       <ul style="font-size: 14px">
-        <li>地址管理</li>
+        <li @click="goAddress">地址管理</li>
         <li v-if="loginStatus" @click="loginOut">退出登录</li>
       </ul>
     </section>
@@ -42,8 +42,13 @@ export default {
   },
   methods: {
     ...mapMutations(['loginOut']),
+    // 去登录页
     goLogin() {
       this.$router.push('/login');
+    },
+    // 地址管理页面
+    goAddress() {
+      this.$router.push('/path');
     },
   }
 }

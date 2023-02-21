@@ -28,6 +28,7 @@ export default {
     mutations : {
         [CART_LIST](state, cartArr) {
             state.list = cartArr;
+            state.selectList = [];
             cartArr.forEach(v=> {
                 state.selectList.push(v.id)
             })
@@ -52,12 +53,13 @@ export default {
             let id = state.list[index].id
             let i = state.selectList.indexOf(id);
             // 能找到对应的id，就删除
-            if(i > 1) {
+            if(i > -1) {
                 return state.selectList.splice(i,1);
             }
             // 如果没有，就添加
             state.selectList.push(id);
         },
+        // 删除
         delGoods(state) {
             state.list = state.list.filter(v => {
                 return state.selectList.indexOf(v.id) === -1
@@ -85,6 +87,8 @@ export default {
                             return v.id === id
                         })
                         state.list.splice(index,1);
+                        // 全不选
+                        commit('UN_CHECK_ALL');
                     } else {
                         // 多选删除
                         arrCart = state.selectList;
@@ -99,7 +103,9 @@ export default {
                             arrId: arrCart,
                         }
                     }).then(res => {
-                        console.log(res);
+                        if(res.success) {
+                            Toast(res.message);
+                        }
                     })
                 })
             }

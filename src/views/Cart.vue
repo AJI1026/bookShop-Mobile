@@ -23,7 +23,7 @@
               <i class="iconfont icon-shanchu" style="font-size: 18px" @click="delGoodsFn(item.id)"></i>
             </div>
             <div class="goods-price">¥{{item.goods_price | priceFilter}}</div>
-            <van-stepper v-model="quantity" integer></van-stepper>
+            <van-stepper @change="changeNum($event, item)" v-model="item.goods_num" integer></van-stepper>
           </div>
         </li>
       </ul>
@@ -71,7 +71,6 @@ export default {
     return  {
       isEditStatus: false, // 编辑状态
       choose: true, // 全选数据
-      quantity: 1, // 商品数量
     }
   },
   filters: {
@@ -112,6 +111,23 @@ export default {
     edit() {
       this.isEditStatus = !this.isEditStatus;
     },
+    // 修改商品数量
+    changeNum(value, item) {
+      // 当前购物车商品对应id以及修改后的数量传递给后端
+      // value 是当前修改的数量
+      // item.id 就是购物车商品的id
+      http.$axios({
+        url: '/api/updateNum',
+        method: 'POST',
+        headers: {
+          token: true
+        },
+        data: {
+          id: item.id,
+          num: value
+        },
+      })
+    }
   },
   created() {
     this.getData();

@@ -15,6 +15,9 @@ import Agreement from "@/views/login/Agreement";
 import RecoveryIndex from "@/views/recovery/RecoveryIndex";
 import RecoveryBtn from "@/views/recovery/RecoveryBtn";
 import Recovery from "@/views/recovery/Recovery";
+import Path from "@/views/Path";
+import PathIndex from "@/views/path/PathIndex";
+import PathEdit from "@/views/path/PathEdit";
 
 Vue.use(VueRouter)
 
@@ -122,6 +125,23 @@ const routes = [
             },
         ],
         component: Recovery,
+    },
+    // 地址管理
+    {
+        path : "/path",
+        component: Path,
+        children: [
+            {
+                path : "/",
+                name: "PathIndex",
+                component: PathIndex,
+            },
+            {
+                path : "/pathEdit",
+                name: "PathEdit",
+                component: PathEdit,
+            },
+        ]
     },
 ]
 
