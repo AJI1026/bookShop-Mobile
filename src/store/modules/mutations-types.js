@@ -6,3 +6,5 @@ export const CART_LIST = 'CART_LIST';
 export const CHECK_ALL = 'CHECK_ALL';
 export const UN_CHECK_ALL = 'UN_CHECK_ALL';
 export const CHECK_EACH = 'CHECK_EACH';
+// 搜获地址
+export const INIT_DATA = 'INIT_DATA';

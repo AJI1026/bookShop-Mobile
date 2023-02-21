@@ -10,9 +10,38 @@ let jwt = require("jsonwebtoken");
 router.get('/', function(req, res) {
   res.render('index', { title: 'Express' });
 });
+
+// 查询搜获地址
+router.post('/api/getAddress', function (req, res) {
+  // token
+  let token = req.headers.token;
+  let tokenObj = jwt.decode(token);
+
+  // 查询用户
+  connection.query(`select * from user_list where tel=${tokenObj.tel}`, function (error, result) {
+    if(error) throw error;
+    console.log(result);
+    // 用户id
+    let UID = result[0].id;
+    connection.query(`select * from address_list where uid=${UID}`, function (error, result) {
+      if(error) throw error;
+      res.send({
+        data: {
+          code: 200,
+          success: true,
+          message: '查询成功',
+          data: result
+        }
+      })
+    })
+  })
+})
 // 增加新的收货地址
 router.post('/api/newAddress', function (req, res) {
   let body = req.body;
+  // token
+  let token = req.headers.token;
+  let tokenObj = jwt.decode(token);
   // 前端发送的地址数据
   let [name, tel, province, city, county, addressDetail, isDefault] = [
     body.name,
@@ -24,21 +53,46 @@ router.post('/api/newAddress', function (req, res) {
     body.isDefault,
   ]
   // 查询用户
-  connection.query(`select * from user_list where tel=${tel}`, function (error, result) {
+  connection.query(`select * from user_list where tel=${tokenObj.tel}`, function (error, result) {
     if(error) throw error;
     // 用户id
     let UID = result[0].id;
-    // 增加一条地址数据
-    connection.query(`insert into address_list (uid, name, tel, province, city, county, addressDetail, isDefault) values ("${UID}","${name}","${tel}","${province}","${city}","${county}","${addressDetail}","${isDefault}")`, function (error, result) {
-      if(error) throw error;
-      res.send({
-        data: {
-          code: 200,
-          success: true,
-          message: '新增地址成功'
-        }
+    if(Number(isDefault) !== 1) {
+      // 增加一条地址数据
+      connection.query(`insert into address_list (uid, name, tel, province, city, county, addressDetail, isDefault) values ("${UID}","${name}","${tel}","${province}","${city}","${county}","${addressDetail}","${isDefault}")`, function (error, result) {
+        console.log(result)
+        if (error) throw error;
+        res.send({
+          data: {
+            code: 200,
+            success: true,
+            message: '新增地址成功'
+          }
+        })
       })
-    })
+    } else {
+      connection.query(`select * from address_list where uid=${UID} and isDefault=${isDefault}`, function (error, result) {
+        if(error) throw error;
+        let addressId = result[0].id;
+        connection.query(`update address_list set isDefault= replace(isDefault, '1', '0') where id=${addressId}`, function(error, result) {
+          if(error) throw error;
+          console.log(result)
+          // 增加一条地址数据
+          connection.query(`insert into address_list (uid, name, tel, province, city, county, addressDetail, isDefault) values ("${UID}","${name}","${tel}","${province}","${city}","${county}","${addressDetail}","${isDefault}")`, function (error, result) {
+            console.log(result)
+            if (error) throw error;
+            res.send({
+              data: {
+                code: 200,
+                success: true,
+                message: '新增地址成功'
+              }
+            })
+          })
+        })
+
+      })
+    }
   })
 })
 // 修改购物车商品数量
