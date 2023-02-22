@@ -5,7 +5,7 @@
       <div class="Address">
         <ul v-if="list.length !== 0">
           <li style="font-size: 13px"
-              @click="editAddress"
+              @click="editAddress(item)"
               v-for="(item, index) in list"
               :key="index"
           >
@@ -23,7 +23,7 @@
         <div class="empty" v-else>
           <div>请添加地址哦～</div>
         </div>
-        <div class="add-address" @click="editAddress">添加地址</div>
+        <div class="add-address" @click="editAddress('add')">添加地址</div>
       </div>
     </section>
     <Tabbar></Tabbar>
@@ -63,8 +63,14 @@ export default {
       })
     },
     // 编辑地址
-    editAddress() {
-      this.$router.push('/pathEdit')
+    editAddress(option) {
+      this.$router.push({
+        name: 'PathEdit',
+        params: {
+          key: JSON.stringify(option),
+        }
+      });
+
     }
   },
   created() {

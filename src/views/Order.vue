@@ -1,0 +1,254 @@
+<template>
+  <div class="order container">
+    <!--头部-->
+    <Header>
+      <span style="font-size: 14px" @click="subPay()">提交订单</span>
+    </Header>
+    <!--内容-->
+    <section>
+      <!--地址信息-->
+      <div class="path">
+        <h3 class="path-title">收货信息：</h3>
+        <div class="path-content">
+          <div>
+            <span>{{path.name}}</span>
+            <span>{{ path.tel }}</span>
+          </div>
+          <div>
+            <span>{{ path.province }}</span>
+            <span>{{ path.city }}</span>
+            <span>{{ path.county }}</span>
+            <span>{{ path.addressDetail }}</span>
+          </div>
+        </div>
+      </div>
+      <!--支付-->
+      <div class="payment">
+        <div class="payment-method">
+          <span>支付方式：</span>
+          <span>选择在线支付，随机减0-100元</span>
+        </div>
+        <van-radio-group v-model="radioPayment">
+          <van-radio name="wechat">微信支付</van-radio>
+          <van-radio name="alipay">支付宝</van-radio>
+          <van-radio name="visa">VISA</van-radio>
+          <van-radio name="credit">银联银行卡</van-radio>
+        </van-radio-group>
+      </div>
+      <!--商品信息-->
+      <div class="goods">
+        <ul>
+          <li v-for="(item, index) in goodsList" :key="index">
+            <div>
+              <img :src="item.goods_imgUrl" alt="">
+            </div>
+            <div class="goods-info">
+              <h4 style="font-size: 12px" class="goods-title">{{item.goods_name}}</h4>
+              <div class="goods-type">规格：无</div>
+              <div class="goods-price">
+                <span>¥{{ item.goods_price }}</span>
+                <span>x{{item.goods_num}}</span>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+    <!--底部-->
+    <footer>
+      <div class="order-total">
+        <span>共</span>
+        <b>{{total.num}}</b>
+        <span>件，</span>
+        <span>总金额：</span>
+        <em>¥{{total.price | priceFilter}}</em>
+      </div>
+      <div class="toPay">
+        提交订单
+      </div>
+    </footer>
+  </div>
+</template>
+
+<script>
+import Header from "@/components/path/Header";
+import {mapGetters, mapMutations, mapState} from "vuex";
+import http from '@/common/api/request';
+
+export default {
+  name: "Order-container",
+  filters: {
+    priceFilter(val) {
+      return parseFloat(val).toFixed(2);
+    }
+  },
+  components: {
+    Header
+  },
+  data() {
+    return {
+      radioPayment: 'wechat',
+      path: {},
+      item: [],
+    }
+  },
+  created() {
+    // 选中的商品id号
+    this.item = JSON.parse(this.$route.query.detail);
+    http.$axios({
+      url: '/api/getAddress',
+      method: 'POST',
+      headers: {
+        token: true
+      }
+    }).then(res => {
+      this.INIT_DATA(res.data);
+      // 有默认收货地址
+      if(this.defaultPath.length) {
+        this.path = this.defaultPath[0];
+      } else {
+        this.path = res.data[0];
+      }
+    })
+  },
+  computed: {
+    ...mapState({
+      list: state => state.cart.list
+    }),
+    ...mapGetters(['total','defaultPath']),
+    goodsList() {
+      return this.item.map(v => {
+        return this.list.find(m => m.id === v);
+      })
+    }
+  },
+  methods: {
+    ...mapMutations(['INIT_DATA']),
+    // 提交订单
+    subPay() {
+
+    },
+  },
+}
+</script>
+
+<style scoped lang="scss">
+section {
+  background-color: #F7F7F7;
+  color: #3a3a3a;
+  .path-title {
+    padding: 20px 0 6px 20px;
+  }
+  .path-content {
+    box-sizing: border-box;
+    padding: 20px;
+    font-size: 1em;
+    background-color: #fff;
+    span {
+      padding-right: 15px;
+    }
+    div:nth-child(2) {
+      color: #ccc;
+    }
+    div {
+      padding: 6px 0;
+    }
+  }
+  .payment {
+    box-sizing: border-box;
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #fff;
+    .van-radio-group {
+      margin-top: 20px;
+      display: flex;
+      .van-radio {
+        margin-right: 20px;
+      }
+    }
+  }
+  .payment-method {
+    span:nth-child(2) {
+      color: sandybrown;
+    }
+  }
+  .goods {
+    box-sizing: border-box;
+    padding: 20px;
+    margin-top: 20px;
+    font-size: 1.1em;
+    background-color: #fff;
+    ul {
+      li {
+        display: flex;
+        align-items: flex-start;
+        box-sizing: border-box;
+        padding-bottom: 40px;
+        img {
+          width: 200px;
+          height: 200px;
+        }
+        .goods-info {
+          flex: 1;
+          box-sizing: border-box;
+          padding: 0 20px;
+          .goods-title {
+            font-size: 1.2em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .goods-type {
+            color: #999999;
+            margin-top: 90px;
+          }
+          .goods-price {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            span:nth-child(1) {
+              color: sandybrown;
+            }
+            span:nth-child(2) {
+              color: #999999;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+footer {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 80px;
+  justify-content: space-between;
+  .order-total {
+    padding-left: 30px;
+    font-size: 1.1em;
+    span {
+      padding: 0 6px;
+    }
+    b, em {
+      color: sandybrown;
+    }
+    em {
+      font-size: 1.2em;
+    }
+  }
+  .toPay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: sandybrown;
+    color: white;
+    height: 100%;
+    width: 200px;
+    font-size: 1.2em;
+  }
+}
+</style>

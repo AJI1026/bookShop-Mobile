@@ -18,6 +18,7 @@ import Recovery from "@/views/recovery/Recovery";
 import Path from "@/views/Path";
 import PathIndex from "@/views/path/PathIndex";
 import PathEdit from "@/views/path/PathEdit";
+import Order from "@/views/Order";
 
 Vue.use(VueRouter)
 
@@ -142,6 +143,12 @@ const routes = [
                 component: PathEdit,
             },
         ]
+    },
+    // 订单页面
+    {
+        path : "/order",
+        name: "Order",
+        component: Order,
     },
 ]
 

@@ -56,7 +56,7 @@
         </div>
       </div>
       <div class="check" style="font-size: 16px" v-if="isEditStatus" @click="delGoodsFn">删除</div>
-      <div class="check" style="font-size: 16px" v-else>去结算</div>
+      <div class="check" style="font-size: 16px" v-else @click="goOrder">去结算</div>
     </footer>
   </div>
 </template>
@@ -64,6 +64,7 @@
 <script>
 import http from '@/common/api/request';
 import {mapMutations, mapState, mapActions, mapGetters} from "vuex";
+import {Toast} from "vant";
 
 export default {
   name: 'cart-container',
@@ -81,12 +82,13 @@ export default {
   },
   computed: {
     ...mapState({
-      list: state => state.cart.list
+      list: state => state.cart.list,
+      selectList: state => state.cart.selectList
     }),
     ...mapGetters(['isCheckedAll','total'])
   },
   methods: {
-    ...mapMutations(['CART_LIST', 'CHECK_EACH']),
+    ...mapMutations(['CART_LIST', 'CHECK_EACH', 'INIT_ORDER']),
     ...mapActions(['checkAllFn', 'delGoodsFn']),
     // 返回
     goBack() {
@@ -127,6 +129,43 @@ export default {
           num: value
         },
       })
+    },
+    // 去结算
+    goOrder() {
+      if(this.selectList.length !== 0) {
+        let newList = [];
+        this.list.forEach(item => {
+          this.selectList.filter(v => {
+            if(v === item.id) {
+              newList.push(item)
+            }
+          })
+        })
+        // 生成一个订单
+        http.$axios({
+          url: '/api/addOrder',
+          method: 'POST',
+          headers: {
+            token: true
+          },
+          data: {
+            arr:newList
+          }
+        }).then(res => {
+          if(!res.success) return;
+          // 存储订单号
+          this.INIT_ORDER(res.data);
+          // 跳转到提交订单页面
+          this.$router.push({
+            path: '/order',
+            query: {
+              detail: JSON.stringify(this.selectList)
+            }
+          });
+        })
+      } else {
+        Toast("请选择商品");
+      }
     }
   },
   created() {

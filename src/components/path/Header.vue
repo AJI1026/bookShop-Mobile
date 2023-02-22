@@ -13,7 +13,11 @@ export default {
   name: "Header-container",
   methods: {
     goBack() {
-      this.$router.back();
+      if(this.$route.path === '/path') {
+        this.$router.push('/my');
+      } else {
+        this.$router.back();
+      }
     },
     goHome() {
       this.$router.push('/home');
