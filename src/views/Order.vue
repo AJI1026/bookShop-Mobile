@@ -2,14 +2,14 @@
   <div class="order container">
     <!--头部-->
     <Header>
-      <span style="font-size: 14px" @click="subPay()">提交订单</span>
+      <span style="font-size: 14px">提交订单</span>
     </Header>
     <!--内容-->
     <section>
       <!--地址信息-->
       <div class="path">
         <h3 class="path-title">收货信息：</h3>
-        <div class="path-content">
+        <div class="path-content" @click="goPath">
           <div>
             <span>{{path.name}}</span>
             <span>{{ path.tel }}</span>
@@ -63,7 +63,7 @@
         <span>总金额：</span>
         <em>¥{{total.price | priceFilter}}</em>
       </div>
-      <div class="toPay">
+      <div class="toPay" @click="subPay">
         提交订单
       </div>
     </footer>
@@ -74,6 +74,9 @@
 import Header from "@/components/path/Header";
 import {mapGetters, mapMutations, mapState} from "vuex";
 import http from '@/common/api/request';
+import {Toast} from "vant";
+import bus from '@/common/bus';
+import qs from 'qs';
 
 export default {
   name: "Order-container",
@@ -90,44 +93,135 @@ export default {
       radioPayment: 'wechat',
       path: {},
       item: [],
+      total: {
+        num: 0,
+        price: 0,
+      }
     }
   },
-  created() {
+  activated() {
+    bus.$on('selectPath', function (data) {
+      this.path = JSON.parse(data);
+    }.bind(this));
     // 选中的商品id号
     this.item = JSON.parse(this.$route.query.detail);
-    http.$axios({
-      url: '/api/getAddress',
-      method: 'POST',
-      headers: {
-        token: true
-      }
-    }).then(res => {
-      this.INIT_DATA(res.data);
-      // 有默认收货地址
-      if(this.defaultPath.length) {
-        this.path = this.defaultPath[0];
-      } else {
-        this.path = res.data[0];
-      }
-    })
+    this.goodsList = JSON.parse(this.$route.query.goodsList);
+    this.selectOrder();
+  },
+  created() {
+    this.goodsList = JSON.parse(this.$route.query.goodsList);
+    this.getAddress();
   },
   computed: {
     ...mapState({
-      list: state => state.cart.list
+      order_id: state => state.order.order_id,
+      selectList: state => state.cart.selectList
     }),
-    ...mapGetters(['total','defaultPath']),
-    goodsList() {
-      return this.item.map(v => {
-        return this.list.find(m => m.id === v);
-      })
-    }
+    ...mapGetters(['defaultPath']),
   },
   methods: {
-    ...mapMutations(['INIT_DATA']),
+    ...mapMutations(['INIT_DATA','INIT_ORDER']),
+    // 查询地址
+    getAddress() {
+      // 查询到地址
+      http.$axios({
+        url: '/api/getAddress',
+        method: 'POST',
+        headers: {
+          token: true
+        }
+      }).then(res => {
+        this.INIT_DATA(res.data);
+        // 有默认收货地址
+        if(this.defaultPath.length) {
+          this.path = this.defaultPath[0];
+        } else {
+          this.path = res.data[0];
+        }
+      })
+    },
+    // 查询订单
+    selectOrder() {
+      // 查询订单
+      http.$axios({
+        url: '/api/getOrder',
+        method: 'POST',
+        headers: {
+          token: true
+        },
+        data: {
+          order_id: this.order_id
+        }
+      }).then(res => {
+        this.INIT_ORDER(res.data);
+        this.total = {
+          price: res.data[0].goods_price,
+          num: res.data[0].goods_num,
+        }
+      })
+    },
     // 提交订单
     subPay() {
+      // 判断是否有地址
+      if(!this.path) return Toast("请填写收货地址");
+      // 发送请求 1.修改订单状态 2.删除购物车的数据
+      if(this.radioPayment === 'alipay') {
+        http.$axios({
+          url: '/api/submitOrder',
+          method: 'POST',
+          headers: {
+            token: true,
+          },
+          data: {
+            order_id: this.order_id,
+            shopArr: this.selectList
+          }
+        }).then(res => {
 
+          let newArr = [];
+          this.goodsList.forEach(v => {
+            newArr.push(v);
+          })
+
+          // 支付传递的参数
+          let dataOrder = {
+            order_id: this.order_id,
+            name: newArr.join(''),
+            price: this.total.price,
+          }
+          if(res.success) {
+            // 去支付
+            http.$axios({
+              url: '/api/payment',
+              method: 'POST',
+              headers: {
+                token: true,
+                'Content-Type': 'application/x-www-form-urlencoded'
+              },
+              // qs增加安全性的序列化插件
+              data: qs.stringify(dataOrder)
+            }).then(res => {
+              if(res.success) {
+                // 返回打开支付宝的页面url
+                Toast("正在跳转到支付宝页面");
+                window.location.href = res.paymentUrl;
+              }
+            })
+          }
+        })
+      } else {
+        Toast('当前只支持支付宝支付');
+      }
     },
+    // 选择收货地址
+    goPath() {
+      this.$router.push({
+        path: '/path',
+        query: {
+          type: 'select'
+        }
+      });
+    }
   },
 }
 </script>

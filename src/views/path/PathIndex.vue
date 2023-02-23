@@ -36,12 +36,18 @@ import Tabbar from "@/components/common/Tabbar";
 import http from "@/common/api/request";
 import { mapState, mapMutations } from "vuex";
 import BetterScroll from "better-scroll";
+import bus from '@/common/bus';
 
 export default {
   name: "PathIndex",
   components: {
     Header,
     Tabbar
+  },
+  data() {
+    return {
+      pathStatus: false
+    }
   },
   computed: {
     ...mapState({
@@ -64,6 +70,12 @@ export default {
     },
     // 编辑地址
     editAddress(option) {
+      // 从订单页面进入的：选择状态
+      if(this.pathStatus === true) {
+        bus.$emit('selectPath', JSON.stringify(option));
+        this.$router.back();
+        return;
+      }
       this.$router.push({
         name: 'PathEdit',
         params: {
@@ -74,6 +86,10 @@ export default {
     }
   },
   created() {
+    // 从订单页面进来
+    if(this.$route.query.type === 'select') {
+      this.pathStatus = true;
+    }
     this.getData();
     this.$nextTick(() => {
       new BetterScroll(this.$refs.address, {

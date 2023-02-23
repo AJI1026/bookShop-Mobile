@@ -5,11 +5,201 @@ const User = require('../db/user');
 // 引入短信验证
 const QcloudSms = require("qcloudsms_js");
 let jwt = require("jsonwebtoken");
+// 引入支付宝配置文件
+const alipaySdk = require("../db/alipay");
+const AlipayFormData = require("alipay-sdk/lib/form").default;
+// 引入axios
+const axios = require("axios");
 
 /* GET home page. */
 router.get('/', function(req, res) {
   res.render('index', { title: 'Express' });
 });
+
+// 支付状态
+router.post('/api/successPayment', function (req, res) {
+  // token
+  let token = req.headers.token;
+  let tokenObj = jwt.decode(token);
+  // 订单号
+  let out_trade_no = req.body.out_trade_no;
+  let trade_no = req.body.trade_no;
+  // 支付包配置
+  const formData = new AlipayFormData();
+  // 调用 setMethod 并传入 get，会返回可以跳转到支付页面的 url
+  formData.setMethod('get');
+  // 支付时的信息
+  formData.addField('bizContent', JSON.stringify({
+    out_trade_no,
+    trade_no
+  }));
+  // 返回promise
+  const result = alipaySdk.exec(
+      'alipay.trade.query',
+      {},
+      {formData: formData},
+  );
+  // 后端请求支付宝
+  result.then(resData => {
+    axios({
+      method: 'GET',
+      url: resData
+    }).then(data => {
+      let responseCode = data.data.alipay_trade_query_response;
+      if(responseCode.code === '10000') {
+        switch (responseCode.trade_status) {
+          case 'WAIT_BUYER_PAY':
+            res.send({
+              data: {
+                code: 0,
+                data: {
+                  message: '支付宝有交易记录，没付款'
+                }
+              }
+            })
+            break;
+          case 'TRADE_FINISHED':
+            res.send({
+              data: {
+                code: 0,
+                data: {
+                  message: '交易结束，不可退款'
+                }
+              }
+            })
+            break;
+          case 'TRADE_SUCCESS':
+            res.send({
+              data: {
+                code: 0,
+                data: {
+                  message: '交易完成'
+                }
+              }
+            })
+            break;
+          case 'TRADE_CLOSED':
+            res.send({
+              data: {
+                code: 0,
+                data: {
+                  message: '交易关闭'
+                }
+              }
+            })
+            break;
+        }
+      } else if(responseCode.code === '40004'){
+        res.send({
+          code: 4,
+          message: '交易不存在'
+        })
+      }
+    }).catch (err => {
+      res.send({
+        data: {
+          code: 500,
+          message: '交易失败',
+          err,
+        }
+      })
+    })
+  })
+})
+// 发起支付
+router.post('/api/payment', function (req, res) {
+  // 订单号
+  let order_id = req.body.order_id;
+  // 商品总价
+  let price = req.body.price;
+  // 购买商品的名称
+  var name = req.body.name;
+  // 开始对接支付宝api
+  const formData = new AlipayFormData();
+  // 调用 setMethod 并传入 get，会返回可以跳转到支付页面的 url
+  formData.setMethod('get');
+  // 支付时的信息
+  formData.addField('bizContent', JSON.stringify({
+    outTradeNo: order_id, // 订单号
+    productCode: 'FAST_INSTANT_TRADE_PAY', // 写死的
+    totalAmount: price, // 价格
+    subject: name, // 商品名称
+  }));
+  // 支付成功或者失败跳转的链接
+  formData.addField('returnUrl', 'http://localhost:8080/#/payment');
+  // 返回promise
+  const result = alipaySdk.exec(
+      'alipay.trade.page.pay',
+      {},
+      {formData: formData},
+  );
+  // 对接支付宝成功，支付宝返回的数据
+  result.then(resp => {
+    res.send({
+      data: {
+        code: 200,
+        success: true,
+        message: '支付中',
+        paymentUrl: resp
+      }
+    })
+  })
+})
+// 修改订单状态
+router.post('/api/submitOrder', function (req, res) {
+  // token
+  let token = req.headers.token;
+  let tokenObj = jwt.decode(token);
+  // 订单号
+  let orderId = req.body.order_id;
+  // 购物车选中的商品id
+  let shopArr = req.body.shopArr;
+  // 查询用户
+  connection.query(`select * from user_list where tel=${tokenObj.tel}`, function (error, result) {
+    if(error) throw error;
+    // 用户id
+    let UID = result[0].id;
+    connection.query(`select * from order_list where uid=${UID} and order_id=${orderId}`, function (error, result) {
+      if(error) throw error;
+      // 订单数据的id
+      let id = result[0].id;
+      // 修改订单状态
+      connection.query(`update order_list set order_status=replace(order_status,"1","2") where id=${id}`, function (error, result) {
+        if(error) throw error;
+        console.log(result);
+        // 购物车数据删除
+        shopArr.forEach(v => {
+          connection.query(`delete from cart_list where id=${v}`, function (error, result) {
+            console.log(result);
+            if(error) throw error;
+          })
+        })
+        res.send({
+          data: {
+            code: 200,
+            success: true,
+            message: "提交订单成功"
+          }
+        })
+      })
+    })
+  })
+})
+// 查询订单
+router.post('/api/getOrder', function(req, res) {
+  let order_id = req.body.order_id;
+  connection.query(`select * from order_list where order_id=${order_id}`, function (error, result) {
+    if (error) throw error;
+    res.send({
+      data: {
+        code: 200,
+        success: true,
+        message: '订单数据',
+        data: result
+      }
+    })
+  })
+})
 // 生成订单号
 router.post('/api/addOrder', function (req, res) {
   // token
@@ -49,6 +239,8 @@ router.post('/api/addOrder', function (req, res) {
   let goodsPrice = 0;
   // 订单商品总数量
   let goodsNum = 0;
+  // 订单号
+  let orderId = randomNumber();
 
   goodsArr.forEach(v => {
     goodsName.push(v.goods_name);
@@ -62,10 +254,11 @@ router.post('/api/addOrder', function (req, res) {
     // 用户id
     let UID = result[0].id;
     // 存储订单数据
-    connection.query(`insert into order_list (uid, order_id, goods_name, goods_price, goods_num, order_status) values ("${UID}","${randomNumber()}","${goodsName}","${goodsPrice}","${goodsNum}","1")`, function (error, result) {
+    connection.query(`insert into order_list (uid, order_id, goods_name, goods_price, goods_num, order_status) values ("${UID}","${orderId}","${goodsName}","${goodsPrice}","${goodsNum}","1")`, function (error, result) {
+      console.log(result);
       if(error) throw error;
       // 返回订单号
-      connection.query(`select * from order_list where uid=${UID} and order_status="1"`, function (error, result) {
+      connection.query(`select * from order_list where uid=${UID} and order_id=${orderId}`, function (error, result) {
         if(error) throw error;
         res.send({
           data: {
@@ -336,10 +529,10 @@ router.post('/api/addCart', function (req, res) {
       let goodsImgUrl = result[0].imgUrl;
       // 查询当前用户在之前是否添加过本商品
       connection.query(`select * from cart_list where uid=${UID} and goods_id=${goodsId}`, function (error, result) {
-        let num = result[0].goods_num;
         if(error) throw error;
         // 用户之前添加过该商品
         if(result.length > 0) {
+          let num = result[0].goods_num;
           connection.query(`update cart_list set goods_num = replace(goods_num, ${num}, ${parseInt(num) + 1}) where id = ${result[0].id}`, function (error, result) {
             console.log(result)
             if(error) throw error;

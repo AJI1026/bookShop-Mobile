@@ -85,7 +85,12 @@ export default {
       list: state => state.cart.list,
       selectList: state => state.cart.selectList
     }),
-    ...mapGetters(['isCheckedAll','total'])
+    ...mapGetters(['isCheckedAll','total']),
+    goodsList() {
+      return this.selectList.map(v => {
+        return this.list.find(m => m.id === v);
+      })
+    }
   },
   methods: {
     ...mapMutations(['CART_LIST', 'CHECK_EACH', 'INIT_ORDER']),
@@ -157,9 +162,10 @@ export default {
           this.INIT_ORDER(res.data);
           // 跳转到提交订单页面
           this.$router.push({
-            path: '/order',
+            name: 'Order',
             query: {
-              detail: JSON.stringify(this.selectList)
+              detail: JSON.stringify(this.selectList),
+              goodsList: JSON.stringify(this.goodsList)
             }
           });
         })

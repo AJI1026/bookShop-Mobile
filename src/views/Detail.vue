@@ -48,7 +48,7 @@
     <!--尾部-->
     <footer>
       <div @click="addCart">加入购物车</div>
-      <div style="background-color: red">立即购买</div>
+      <div style="background-color: red" @click="addNow">立即购买</div>
     </footer>
   </div>
 </template>
@@ -142,6 +142,22 @@ export default {
         }
       })
     },
+    // 立即购买
+    addNow() {
+      http.$axios({
+        url: '/api/addCart',
+        method: 'POST',
+        data: {
+          goodsId: this.$route.query.id
+        },
+        headers: {
+          token: true,
+        }
+      }).then(res => {
+        this.$router.push('/cart');
+        Toast(res.message);
+      })
+    }
   },
   created() {
     this.id = this.$route.query.id;

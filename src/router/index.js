@@ -19,6 +19,7 @@ import Path from "@/views/Path";
 import PathIndex from "@/views/path/PathIndex";
 import PathEdit from "@/views/path/PathEdit";
 import Order from "@/views/Order";
+import Payment from "@/views/Payment";
 
 Vue.use(VueRouter)
 
@@ -149,6 +150,15 @@ const routes = [
         path : "/order",
         name: "Order",
         component: Order,
+        meta: {
+            keepalive: true,
+        }
+    },
+    // 支付后跳转的页面
+    {
+        path : "/payment",
+        name: "Payment",
+        component: Payment,
     },
 ]
 
