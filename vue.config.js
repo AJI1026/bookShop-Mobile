@@ -26,6 +26,7 @@ module.exports = defineConfig({
   },
   // 跨域
   devServer: {
+    host: '0.0.0.0', // 默认host可以不写
     proxy: {
       '/api': {
         target: "http://localhost:3000",

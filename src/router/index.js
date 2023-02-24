@@ -161,10 +161,32 @@ const routes = [
         component: Payment,
     },
 ]
-
 const router = new VueRouter({
     mode: "hash",
     base: process.env.BASE_URL,
     routes
 });
+
+const VueRouterPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push (to) {
+    return VueRouterPush.call(this, to).catch(err => err)
+}
+
+// 全局守卫
+router.beforeEach((to, from, next) => {
+    let nextRoute = ['Payment','Order','Path','Cart', 'Detail', 'List'];
+    // 是否是登录中
+    let userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    // 当前进入的页面，是不是需要验证的页面
+    if(nextRoute.indexOf(to.name) >= 0) {
+        if(!userInfo) {
+            router.push('/login');
+        } else {
+            next();
+        }
+    } else {
+        next();
+    }
+})
+
 export default router;

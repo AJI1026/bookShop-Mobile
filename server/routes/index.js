@@ -59,29 +59,57 @@ router.post('/api/successPayment', function (req, res) {
             })
             break;
           case 'TRADE_FINISHED':
-            res.send({
-              data: {
-                code: 0,
-                data: {
-                  message: '交易结束，不可退款'
-                }
-              }
+            connection.query(`select * from user_list where tel=${tokenObj.tel}`, function (error, result) {
+              if(error) throw error;
+              // 用户id
+              let UID = result[0].id;
+              connection.query(`select * from order_list where uid=${UID} and order_id=${out_trade_no}`, function (error, result) {
+                if(error) throw error;
+                let id = result[0].id;
+                // 订单的状态2->3
+                connection.query(`update order_list set order_status=replace(order_status, "2", "3") where id=${id}`, function (error, result) {
+                  if(error) throw error;
+                  console.log(result);
+                  res.send({
+                    data: {
+                      code: 2,
+                      data: {
+                        message: '交易结束，不可退款'
+                      }
+                    }
+                  })
+                })
+              })
             })
             break;
           case 'TRADE_SUCCESS':
-            res.send({
-              data: {
-                code: 0,
-                data: {
-                  message: '交易完成'
-                }
-              }
+            connection.query(`select * from user_list where tel=${tokenObj.tel}`, function (error, result) {
+              if(error) throw error;
+              // 用户id
+              let UID = result[0].id;
+              connection.query(`select * from order_list where uid=${UID} and order_id=${out_trade_no}`, function (error, result) {
+                if(error) throw error;
+                let id = result[0].id;
+                // 订单的状态2->3
+                connection.query(`update order_list set order_status=replace(order_status, "2", "3") where id=${id}`, function (error, result) {
+                  if(error) throw error;
+                  console.log(result);
+                  res.send({
+                    data: {
+                      code: 2,
+                      data: {
+                        message: '交易完成'
+                      }
+                    }
+                  })
+                })
+              })
             })
             break;
           case 'TRADE_CLOSED':
             res.send({
               data: {
-                code: 0,
+                code: 1,
                 data: {
                   message: '交易关闭'
                 }

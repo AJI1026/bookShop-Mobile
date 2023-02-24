@@ -1,6 +1,7 @@
 <template>
   <div class="payment">
-    支付了
+    <div v-if="payStatus">支付成功～</div>
+    <div v-else>支付失败</div>
   </div>
 </template>
 
@@ -10,6 +11,11 @@ import qs from 'qs';
 
 export default {
   name: "Payment-container",
+  data() {
+    return {
+      payStatus: false
+    }
+  },
   methods: {
     getData() {
       let data = {
@@ -26,7 +32,9 @@ export default {
         },
         data: qs.stringify(data)
       }).then(res => {
-        console.log(res);
+        if(res.code === 2) {
+          this.payStatus = true;
+        }
       })
     },
   },
